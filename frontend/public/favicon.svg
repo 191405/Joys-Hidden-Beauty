@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Elegant blush roundel background -->
+  <circle cx="64" cy="64" r="62" fill="#F2E8E8" stroke="#D4AF37" stroke-width="2.5" />
+  
+  <!-- Stylized luxury Gold J-H monogram -->
+  <text 
+    x="64" 
+    y="78" 
+    font-family="'Cinzel', 'Playfair Display', 'Georgia', serif" 
+    font-size="44" 
+    font-weight="700" 
+    fill="#D4AF37" 
+    text-anchor="middle" 
+    letter-spacing="-1.5"
+    dominant-baseline="middle"
+  >JH</text>
+  
+  <!-- Subtle inner gold halo ring -->
+  <circle cx="64" cy="64" r="54" fill="none" stroke="#D4AF37" stroke-width="0.75" stroke-dasharray="2 3" opacity="0.7" />
+</svg>
