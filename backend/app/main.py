@@ -43,19 +43,27 @@ app = FastAPI(
 )
 
 # --- CORS ---
+# Build allowed origins list dynamically
+_allowed_origins = [
+    "http://localhost:3000",        # Next.js dev
+    "http://localhost:3001",        # Next.js production preview
+    "http://127.0.0.1:3000",
+    "https://joyshiddenbeauty.com",  # Production custom domain
+    "https://platkelvconcept.net",   # IONOS domain
+    settings.FRONTEND_URL,
+]
+
+# Add Vercel preview URL patterns if FRONTEND_URL is a Vercel domain
+if "vercel.app" in settings.FRONTEND_URL:
+    _allowed_origins.append(settings.FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",        # Next.js dev
-        "http://localhost:3001",        # Next.js production preview
-        "http://127.0.0.1:3000",
-        "https://joyshiddenbeauty.com",  # Production
-        "https://platkelvconcept.net",   # IONOS domain
-        settings.FRONTEND_URL,
-    ],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origin_regex=r"https://joys-hidden-beauty.*\.vercel\.app",  # All Vercel previews
 )
 
 # --- Routers ---

@@ -9,16 +9,26 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
+# Render provides 'postgres://' but SQLAlchemy 2.x requires 'postgresql://'
+_db_url = settings.DATABASE_URL
+if _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+
 # Build engine args based on dialect
 _connect_args = {}
-if "sqlite" in settings.DATABASE_URL:
+_pool_kwargs = {}
+if "sqlite" in _db_url:
     _connect_args = {"check_same_thread": False}
+else:
+    # Production PostgreSQL connection pool settings
+    _pool_kwargs = {"pool_size": 5, "max_overflow": 10}
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    _db_url,
     connect_args=_connect_args,
     echo=False,
     pool_pre_ping=True,  # Reconnect on stale connections (important for PG)
+    **_pool_kwargs,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
