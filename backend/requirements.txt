@@ -14,4 +14,4 @@ sentry-sdk[fastapi]==2.14.0
 apscheduler==3.10.4
 icalendar==6.1.0
 google-auth==2.29.0
-# psycopg2-binary==2.9.9  # Install at deploy time for PostgreSQL
+psycopg2-binary==2.9.9
