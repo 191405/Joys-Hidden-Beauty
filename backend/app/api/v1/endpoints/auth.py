@@ -2,7 +2,7 @@
 Auth API — Register, Login, Current User.
 Updated for RBAC and SkinProfile separation.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -48,7 +48,7 @@ class UserResponse(BaseModel):
 
 # --- Endpoints ---
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+def register(payload: RegisterRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Create a new user with a blank skin profile and send a welcome email."""
     # Check if email already exists
     existing = db.query(User).filter(User.email == payload.email).first()
@@ -71,7 +71,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Send welcome email
-    send_email(to=user.email, template_name="welcome", first_name=user.first_name)
+    background_tasks.add_task(send_email, to=user.email, template_name="welcome", first_name=user.first_name)
 
     token = create_access_token(data={"sub": str(user.id), "role": user.role.value})
     return TokenResponse(access_token=token)

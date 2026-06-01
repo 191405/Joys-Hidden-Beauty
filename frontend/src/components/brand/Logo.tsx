@@ -44,11 +44,11 @@ export default function Logo({
         beautyTextColor = "text-[#FFFCF9]/80";
     }
 
-    // Determine emblem pixel dimensions based on size
+    // Determine emblem pixel dimensions based on aspect ratio (approx 1.3 width to height)
     const emblemDimensions = 
-        size === "small" ? { w: 38, h: 38 } : 
-        size === "large" ? { w: 80, h: 80 } : 
-        { w: 52, h: 52 };
+        size === "small" ? { w: 47, h: 36 } : 
+        size === "large" ? { w: 104, h: 80 } : 
+        { w: 68, h: 52 };
 
     // --- Variant: "text" (Typographic luxury serif fallback) ---
     if (variant === "text") {
@@ -96,7 +96,7 @@ export default function Logo({
                     <Image
                         src={emblemSrc}
                         alt="JHB Emblem"
-                        width={36}
+                        width={47}
                         height={36}
                         className="object-contain pointer-events-none select-none filter drop-shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
                         priority
@@ -121,8 +121,8 @@ export default function Logo({
                     <Image
                         src={emblemSrc}
                         alt="JHB Emblem"
-                        width={84}
-                        height={84}
+                        width={104}
+                        height={80}
                         className="object-contain pointer-events-none select-none filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
                         priority
                     />
@@ -146,8 +146,8 @@ export default function Logo({
                 <Image
                     src={emblemSrc}
                     alt="JHB Emblem"
-                    width={48}
-                    height={48}
+                    width={68}
+                    height={52}
                     className="object-contain pointer-events-none select-none filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
                     priority
                 />

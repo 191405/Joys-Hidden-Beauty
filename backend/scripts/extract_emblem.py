@@ -13,18 +13,14 @@ def extract_emblem():
     img = Image.open(img_path).convert("RGBA")
     w, h = img.size
     
-    # Crop bounds centered at 50% width and 37% height
-    # We want a square crop capturing the emblem perfectly.
-    # The emblem is roughly 40% of the image height. Let's make the crop 46% of the height.
-    crop_size = int(h * 0.46)
-    cx, cy = int(w * 0.50), int(h * 0.37)
+    # Perfect rectangular crop to capture the full width of the JHB monogram and face without clipping,
+    # while keeping the bottom safely above the 'JOYS HIDDEN BEAUTY' text.
+    left = int(w * 0.28)
+    right = int(w * 0.72)
+    top = int(h * 0.18)
+    bottom = int(h * 0.52)
     
-    left = max(0, cx - crop_size // 2)
-    top = max(0, cy - crop_size // 2)
-    right = min(w, cx + crop_size // 2)
-    bottom = min(h, cy + crop_size // 2)
-    
-    print(f"Cropping emblem at center ({cx}, {cy}) with size {crop_size}...")
+    print(f"Cropping emblem at bounds: left={left}, top={top}, right={right}, bottom={bottom}...")
     cropped = img.crop((left, top, right, bottom))
     
     # We will process each pixel to create the transparent, anti-aliased assets

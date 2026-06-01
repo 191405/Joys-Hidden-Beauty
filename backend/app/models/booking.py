@@ -62,6 +62,10 @@ class Appointment(Base):
     # OPay payment reference
     opay_reference = Column(String(255), nullable=True)
 
+    # Automated deposit tracking
+    deposit_amount = Column(Float, default=0.0, nullable=False)
+    is_deposit_paid = Column(Boolean, default=False, nullable=False)
+
     # Relationships
     user = relationship("User", back_populates="appointments")
     service = relationship("Service", back_populates="appointments")

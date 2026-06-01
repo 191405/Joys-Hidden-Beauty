@@ -2,7 +2,7 @@
 Booking API — Services, Availability, Hold, Reserve.
 Updated: slots are computed from Staff schedules, not a static table.
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -122,6 +122,7 @@ def hold_time_slot(
 @router.post("/confirm/{appointment_id}", response_model=dict)
 def confirm_booking(
     appointment_id: int,
+    background_tasks: BackgroundTasks,
     user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db),
 ):
@@ -136,7 +137,8 @@ def confirm_booking(
     from app.models.user import User
     user = db.query(User).filter(User.id == user_id).first()
     if user:
-        send_email(
+        background_tasks.add_task(
+            send_email,
             to=user.email,
             template_name="appointment_reminder",
             service_name=result["service"],

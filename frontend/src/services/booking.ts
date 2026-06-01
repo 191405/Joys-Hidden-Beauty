@@ -61,10 +61,10 @@ export const BookingService = {
         });
     },
 
-    async initiatePayment(appointmentId: number): Promise<PaymentInitiateResponse> {
+    async initiatePayment(appointmentIds: number[]): Promise<PaymentInitiateResponse> {
         return apiFetch<PaymentInitiateResponse>("/payment/initiate", {
             method: "POST",
-            body: JSON.stringify({ appointment_id: appointmentId }),
+            body: JSON.stringify({ appointment_ids: appointmentIds }),
         });
     },
 

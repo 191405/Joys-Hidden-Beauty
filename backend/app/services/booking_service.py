@@ -74,7 +74,7 @@ def get_available_slots(
 
         # Fetch existing appointments for this staff member on this day
         # Include both confirmed and held (not expired) appointments
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()
         existing = (
             db.query(Appointment)
             .filter(
@@ -170,7 +170,7 @@ def hold_slot(
 
     start_time = datetime.fromisoformat(start_time_str)
     end_time = start_time + timedelta(minutes=service.duration_minutes)
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     held_until = now + timedelta(minutes=10)
 
     # Check for conflicts (excluding expired holds)
@@ -201,6 +201,7 @@ def hold_slot(
             detail="This time slot is no longer available. Please choose another.",
         )
 
+    deposit_amount = round(service.price * 0.30, 2)
     appointment = Appointment(
         user_id=user_id,
         service_id=service_id,
@@ -210,6 +211,8 @@ def hold_slot(
         status=AppointmentStatus.held,
         held_until=held_until,
         booked_at=now,
+        deposit_amount=deposit_amount,
+        is_deposit_paid=False,
     )
     db.add(appointment)
     db.commit()
@@ -223,6 +226,7 @@ def hold_slot(
         "end_time": end_time.isoformat(),
         "held_until": held_until.isoformat(),
         "status": "held",
+        "deposit_amount": deposit_amount,
         "message": f"Slot held for 10 minutes. Complete payment to confirm.",
     }
 
@@ -239,6 +243,7 @@ def confirm_appointment(db: Session, appointment_id: int, opay_reference: str = 
     appointment.status = AppointmentStatus.confirmed
     appointment.held_until = None
     appointment.opay_reference = opay_reference
+    appointment.is_deposit_paid = True
     db.commit()
     db.refresh(appointment)
 
@@ -261,7 +266,7 @@ def release_expired_holds(db: Session) -> int:
     Release all expired holds. Called by the scheduler every 2 minutes.
     Returns the number of released holds.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     expired = (
         db.query(Appointment)
         .filter(

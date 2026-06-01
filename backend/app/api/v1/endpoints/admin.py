@@ -148,7 +148,7 @@ def admin_dashboard(
     db: Session = Depends(get_db),
 ):
     """Summary statistics for the admin dashboard."""
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
 

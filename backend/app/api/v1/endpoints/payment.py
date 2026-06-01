@@ -7,7 +7,7 @@ Endpoints:
   GET  /verify/{ref}   — Manual payment status check
   GET  /return         — Return URL after OPay payment (redirects to frontend)
 """
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status, BackgroundTasks
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -36,7 +36,7 @@ router = APIRouter(prefix="/payment", tags=["Payment"])
 
 # --- Schemas ---
 class InitiatePaymentRequest(BaseModel):
-    appointment_id: int
+    appointment_ids: list[int]
 
 
 class InitiatePaymentResponse(BaseModel):
@@ -63,23 +63,20 @@ def initiate_payment(
     Create an OPay cashier payment for a held appointment.
     Returns a cashier_url for the frontend to redirect the user to.
     """
-    appointment = (
+    appointments = (
         db.query(Appointment)
-        .filter(Appointment.id == payload.appointment_id, Appointment.user_id == user_id)
-        .first()
+        .filter(Appointment.id.in_(payload.appointment_ids), Appointment.user_id == user_id)
+        .all()
     )
-    if not appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+    if not appointments or len(appointments) != len(payload.appointment_ids):
+        raise HTTPException(status_code=404, detail="One or more appointments not found")
 
-    if appointment.status != AppointmentStatus.held:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Cannot initiate payment for appointment with status '{appointment.status.value}'",
-        )
-
-    service = db.query(Service).filter(Service.id == appointment.service_id).first()
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
+    for appointment in appointments:
+        if appointment.status != AppointmentStatus.held:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot initiate payment for appointment {appointment.id} with status '{appointment.status.value}'",
+            )
 
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -88,10 +85,14 @@ def initiate_payment(
     # Generate unique payment reference
     reference = generate_reference(prefix="JHB")
 
-    # Store reference on the appointment so we can match callbacks
-    appointment.opay_reference = reference
-    appointment.status = AppointmentStatus.pending
+    # Store reference and change status to pending
+    for appointment in appointments:
+        appointment.opay_reference = reference
+        appointment.status = AppointmentStatus.pending
     db.commit()
+
+    # Sum up the deposits
+    total_amount = sum(apt.deposit_amount for apt in appointments)
 
     # Build URLs
     frontend_url = settings.FRONTEND_URL
@@ -102,23 +103,33 @@ def initiate_payment(
     callback_url = f"{api_base}/api/v1/payment/callback"
     cancel_url = f"{backend_base}/booking?cancelled=true"
 
+    # Assemble product list description
+    services_desc = []
+    for apt in appointments:
+        service = db.query(Service).filter(Service.id == apt.service_id).first()
+        if service:
+            services_desc.append(service.name)
+    product_name = ", ".join(services_desc) if services_desc else "Luxury Wellness Services"
+    product_description = f"{product_name} — Bespoke Wellness Booking Deposit"
+
     try:
         result = create_cashier_payment(
             reference=reference,
-            amount_naira=service.price,
+            amount_naira=total_amount,
             user_email=user.email,
             user_name=user.first_name,
             user_id=str(user.id),
-            product_name=service.name,
-            product_description=f"{service.name} — {service.duration_minutes} min appointment",
+            product_name=product_name[:100],  # Keep within limits
+            product_description=product_description[:250],
             return_url=return_url,
             callback_url=callback_url,
             cancel_url=cancel_url,
         )
     except Exception as e:
         # Revert status on failure
-        appointment.status = AppointmentStatus.held
-        appointment.opay_reference = None
+        for appointment in appointments:
+            appointment.status = AppointmentStatus.held
+            appointment.opay_reference = None
         db.commit()
         logger.error(f"OPay payment initiation failed: {e}")
         raise HTTPException(status_code=502, detail="Payment service temporarily unavailable")
@@ -127,8 +138,9 @@ def initiate_payment(
     order_no = result.get("data", {}).get("orderNo", "")
 
     if not cashier_url:
-        appointment.status = AppointmentStatus.held
-        appointment.opay_reference = None
+        for appointment in appointments:
+            appointment.status = AppointmentStatus.held
+            appointment.opay_reference = None
         db.commit()
         raise HTTPException(status_code=502, detail="Failed to generate payment URL")
 
@@ -140,7 +152,7 @@ def initiate_payment(
 
 
 @router.post("/callback")
-async def payment_callback(request: Request, db: Session = Depends(get_db)):
+async def payment_callback(request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     OPay webhook callback — called by OPay after payment status changes.
     Verifies the SHA512 signature and confirms the appointment if payment succeeded.
@@ -165,33 +177,40 @@ async def payment_callback(request: Request, db: Session = Depends(get_db)):
 
     logger.info(f"OPay Callback → ref={reference}, status={payment_status}, type={event_type}")
 
-    # Find the appointment by OPay reference
-    appointment = db.query(Appointment).filter(Appointment.opay_reference == reference).first()
-    if not appointment:
+    # Find all appointments by OPay reference
+    appointments = db.query(Appointment).filter(Appointment.opay_reference == reference).all()
+    if not appointments:
         logger.warning(f"OPay callback for unknown reference: {reference}")
         return {"status": "ignored", "reason": "unknown reference"}
 
     if payment_status == "SUCCESS":
-        # Confirm the appointment
-        result = confirm_appointment(db, appointment.id, opay_reference=reference)
+        confirmed_ids = []
+        services_list = []
+        for appointment in appointments:
+            result = confirm_appointment(db, appointment.id, opay_reference=reference)
+            confirmed_ids.append(appointment.id)
+            services_list.append(result["service"])
 
         # Send confirmation email
-        user = db.query(User).filter(User.id == appointment.user_id).first()
+        user = db.query(User).filter(User.id == appointments[0].user_id).first()
         if user:
-            send_email(
+            services_str = ", ".join(services_list)
+            background_tasks.add_task(
+                send_email,
                 to=user.email,
                 template_name="appointment_reminder",
-                service_name=result["service"],
-                appointment_time=result["start_time"],
+                service_name=services_str,
+                appointment_time=appointments[0].start_time.isoformat(),
             )
 
-        return {"status": "confirmed", "appointment_id": appointment.id}
+        return {"status": "confirmed", "appointment_ids": confirmed_ids}
 
     elif payment_status in ("FAIL", "CLOSE"):
         # Payment failed or was cancelled — release the hold
-        appointment.status = AppointmentStatus.cancelled
+        for appointment in appointments:
+            appointment.status = AppointmentStatus.cancelled
         db.commit()
-        return {"status": "cancelled", "appointment_id": appointment.id}
+        return {"status": "cancelled", "appointment_ids": [a.id for a in appointments]}
 
     # For other statuses (PENDING, etc.), just acknowledge
     return {"status": "acknowledged", "payment_status": payment_status}
@@ -200,6 +219,7 @@ async def payment_callback(request: Request, db: Session = Depends(get_db)):
 @router.get("/verify/{reference}", response_model=PaymentStatusResponse)
 def verify_payment(
     reference: str,
+    background_tasks: BackgroundTasks,
     user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db),
 ):
@@ -208,12 +228,12 @@ def verify_payment(
     Useful for the return page to confirm payment went through.
     """
     # Verify the reference belongs to this user
-    appointment = (
+    appointments = (
         db.query(Appointment)
         .filter(Appointment.opay_reference == reference, Appointment.user_id == user_id)
-        .first()
+        .all()
     )
-    if not appointment:
+    if not appointments:
         raise HTTPException(status_code=404, detail="Payment reference not found")
 
     try:
@@ -226,18 +246,24 @@ def verify_payment(
     opay_status = opay_data.get("status", "UNKNOWN")
     amount_kobo = opay_data.get("amount", {}).get("total", 0)
 
-    # If OPay says SUCCESS but our appointment isn't confirmed yet, confirm it now
-    if opay_status == "SUCCESS" and appointment.status != AppointmentStatus.confirmed:
-        confirm_appointment(db, appointment.id, opay_reference=reference)
+    # If OPay says SUCCESS but our appointments aren't confirmed yet, confirm all now
+    if opay_status == "SUCCESS" and appointments[0].status != AppointmentStatus.confirmed:
+        services_list = []
+        for appointment in appointments:
+            confirm_appointment(db, appointment.id, opay_reference=reference)
+            service = db.query(Service).filter(Service.id == appointment.service_id).first()
+            if service:
+                services_list.append(service.name)
 
         user = db.query(User).filter(User.id == user_id).first()
-        service = db.query(Service).filter(Service.id == appointment.service_id).first()
-        if user and service:
-            send_email(
+        if user:
+            services_str = ", ".join(services_list) if services_list else "Bespoke Services"
+            background_tasks.add_task(
+                send_email,
                 to=user.email,
                 template_name="appointment_reminder",
-                service_name=service.name,
-                appointment_time=appointment.start_time.isoformat(),
+                service_name=services_str,
+                appointment_time=appointments[0].start_time.isoformat(),
             )
 
     status_map = {
