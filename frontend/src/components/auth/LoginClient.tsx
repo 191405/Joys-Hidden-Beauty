@@ -70,20 +70,20 @@ export default function LoginClient() {
     };
 
     return (
-        <div className="min-h-screen flex relative bg-[var(--color-canvas)] lg:bg-transparent selection:bg-[var(--color-gold)] selection:text-white">
+        <div className="min-h-screen flex flex-col lg:flex-row relative bg-[var(--color-canvas)] selection:bg-[var(--color-gold)] selection:text-white overflow-y-auto lg:overflow-hidden">
             
-            {/* Mobile/Tablet Background Image (Hidden on Desktop) */}
-            <div className="absolute inset-0 lg:hidden overflow-hidden">
+            {/* Mobile/Tablet Image Header (Hidden on Desktop) */}
+            <div className="w-full h-[45vh] lg:hidden relative overflow-hidden flex-shrink-0">
                 <div 
-                    className="absolute inset-0 bg-cover bg-center transform scale-105"
-                    style={{ backgroundImage: `url('/images/login-portrait.jpg')` }}
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url('/images/auth-mobile-bg.jpg')`, backgroundPosition: 'center 15%' }}
                 />
-                {/* Overlay to ensure the glass box pops */}
-                <div className="absolute inset-0 bg-black/20" />
+                {/* Overlay that melts the photo into the warm white canvas */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--color-canvas)] to-transparent" />
             </div>
 
             {/* Left — Full Bleed Editorial Image (Desktop Only) */}
-            <div className="hidden lg:block lg:w-[55%] relative overflow-hidden">
+            <div className="hidden lg:block lg:w-[55%] relative overflow-hidden flex-shrink-0">
                 <div 
                     className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[15s] hover:scale-100"
                     style={{ backgroundImage: `url('/images/login-portrait.jpg')` }}
@@ -91,23 +91,23 @@ export default function LoginClient() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent transition-opacity duration-1000 hover:opacity-80" />
             </div>
 
-            {/* Right — Clean Minimalist Canvas (Desktop) / Glass Form (Mobile) */}
-            <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-12 md:px-20 py-16 pt-24 md:pt-20 relative z-10 lg:bg-[var(--color-canvas)]">
+            {/* Right — Minimalist Canvas (Desktop) / Fluid Form (Mobile) */}
+            <div className="w-full lg:w-[45%] flex items-center justify-center px-6 sm:px-12 md:px-20 py-10 lg:py-20 bg-[var(--color-canvas)] relative z-10 flex-grow">
                 <motion.div
-                    className="w-full max-w-sm bg-[var(--color-canvas)]/85 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none p-8 sm:p-10 lg:p-0 border border-[rgba(255,255,255,0.3)] lg:border-none shadow-2xl lg:shadow-none rounded-2xl lg:rounded-none"
+                    className="w-full max-w-sm"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-8">
+                    <motion.div variants={itemVariants} className="flex justify-start mb-8">
                         <Logo variant="text" size="large" theme="gold" className="!tracking-[0.1em]" />
                     </motion.div>
                     
-                    <motion.p variants={itemVariants} className="font-[family-name:var(--font-cinzel)] text-[10px] sm:text-xs tracking-[0.3em] uppercase text-[var(--color-gold)] mb-3 text-center lg:text-left">
+                    <motion.p variants={itemVariants} className="font-[family-name:var(--font-cinzel)] text-[10px] sm:text-xs tracking-[0.3em] uppercase text-[var(--color-gold)] mb-3">
                         Welcome Back
                     </motion.p>
                     
-                    <motion.h1 variants={itemVariants} className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl mb-8 text-[var(--color-ink)] leading-tight text-center lg:text-left">
+                    <motion.h1 variants={itemVariants} className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl mb-8 text-[var(--color-ink)] leading-tight">
                         Sign In
                     </motion.h1>
 
@@ -186,7 +186,7 @@ export default function LoginClient() {
 
                     <motion.div variants={itemVariants} className="relative flex items-center justify-center mt-10 mb-8">
                         <div className="border-t border-[rgba(26,26,26,0.1)] w-full"></div>
-                        <span className="bg-[var(--color-canvas)] lg:bg-transparent px-4 text-[9px] tracking-widest uppercase text-[var(--color-slate)] absolute">Or</span>
+                        <span className="bg-[var(--color-canvas)] px-4 text-[9px] tracking-widest uppercase text-[var(--color-slate)] absolute">Or</span>
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
