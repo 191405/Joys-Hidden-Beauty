@@ -40,6 +40,10 @@ export default function Header() {
 
     const isActive = (href: string) => pathname === href;
 
+    if (pathname?.startsWith("/auth")) {
+        return null;
+    }
+
     return (
         <>
             <motion.header
