@@ -63,7 +63,7 @@ export default function HomePage() {
           style={{
             fontFamily: "var(--font-playfair)",
             fontSize: "clamp(12rem, 30vw, 28rem)",
-            color: "rgba(212,175,55,0.05)",
+            color: "var(--color-gold-muted)",
             fontStyle: "italic",
             lineHeight: 1,
           }}
@@ -113,7 +113,7 @@ export default function HomePage() {
                   <span className="italic">Extraordinary</span>
                 </h2>
                 <div className="divider-gold" />
-                <p className="text-[var(--color-slate)] leading-relaxed mb-4 mt-6 text-[0.95rem]">
+                <p className="text-[var(--color-slate)] leading-relaxed mb-4 mt-6 text-sm sm:text-[0.95rem] md:text-base">
                   From flawless Bridal packages to stunning Studio and Home Owambe glams, every makeup application and gele styling is tailored to highlight your unique beauty profile.
                 </p>
                 <ul className="space-y-3 mb-10">
@@ -146,7 +146,7 @@ export default function HomePage() {
           </RevealOnScroll>
 
           {/* Desktop Grid / Mobile Horizontal Scroll */}
-          <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-4 no-scrollbar md:overflow-x-visible md:grid md:grid-cols-3 md:gap-12 md:pb-0 snap-x snap-mandatory md:snap-none">
+          <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-6 no-scrollbar md:overflow-x-visible md:grid md:grid-cols-3 md:gap-12 md:pb-0 snap-x snap-mandatory md:snap-none pl-4 sm:pl-0 pr-4 sm:pr-0">
             {TESTIMONIALS.map((t, i) => (
               <RevealOnScroll key={i} delay={i * 0.15}>
                 <div className="text-center flex-shrink-0 w-[80vw] md:w-auto snap-center">

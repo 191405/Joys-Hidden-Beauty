@@ -33,7 +33,7 @@ export default function SplitHero() {
         <section className="relative min-h-screen flex flex-col md:flex-row overflow-hidden">
 
             {/* ── Left Panel — Image ── */}
-            <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-screen md:w-1/2 overflow-hidden">
+            <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-screen md:flex-1 overflow-hidden shrink-0 basis-auto md:basis-1/2">
                 {/* Image */}
                 <motion.div
                     className="absolute inset-0 bg-cover bg-center scale-105"
@@ -53,9 +53,9 @@ export default function SplitHero() {
             </div>
 
             {/* ── Right Panel — Editorial Copy ── */}
-            <div className="w-full md:w-1/2 flex items-center justify-center
-                            bg-[var(--color-canvas)] px-8 sm:px-12 md:px-16 lg:px-24
-                            py-16 md:py-0 relative">
+            <div className="w-full md:flex-1 flex items-center justify-center
+                            bg-[var(--color-canvas)] px-6 sm:px-12 md:px-12 lg:px-20 xl:px-24
+                            py-16 md:py-0 relative shrink-0 basis-auto md:basis-1/2">
 
                 <motion.div
                     className="max-w-lg w-full"
@@ -76,7 +76,7 @@ export default function SplitHero() {
                     <motion.h1
                         variants={ITEM}
                         className="font-[family-name:var(--font-playfair)]
-                                   text-4xl sm:text-5xl lg:text-6xl xl:text-7xl
+                                   text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem]
                                    font-medium leading-[1.05] tracking-tight mb-6"
                     >
                         Discover the
@@ -93,7 +93,7 @@ export default function SplitHero() {
                     {/* Body */}
                     <motion.p
                         variants={ITEM}
-                        className="text-[var(--color-slate)] text-base leading-relaxed mb-8 sm:mb-10 max-w-md"
+                        className="text-[var(--color-slate)] text-sm sm:text-base md:text-[0.95rem] lg:text-base leading-relaxed mb-8 sm:mb-10 max-w-md"
                     >
                         Where artistry meets science. Our curated collection of quality beauty essentials
                         is designed to reveal the extraordinary in you.

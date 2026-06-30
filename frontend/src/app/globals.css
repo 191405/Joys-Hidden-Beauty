@@ -7,15 +7,15 @@
 
 @theme inline {
   /* ── Color Palette ── */
-  --color-canvas: #FFFCF9;
-  --color-ink: #1A1A1A;
-  --color-gold: #D4AF37;
-  --color-gold-light: #E8D48B;
-  --color-gold-dark: #B8960F;
-  --color-gold-muted: rgba(212, 175, 55, 0.15);
-  --color-blush: #F2E8E8;
-  --color-blush-deep: #E8D5D5;
-  --color-mist: #F7F4F0;
+  --color-canvas: #FFFBF5;
+  --color-ink: #0A0A0A;
+  --color-gold: #E2B227;
+  --color-gold-light: #F7D154;
+  --color-gold-dark: #B8860B;
+  --color-gold-muted: rgba(226, 178, 39, 0.15);
+  --color-blush: #FCEBEB;
+  --color-blush-deep: #EAC2C2;
+  --color-mist: #F4EBE1;
   --color-slate: #6B6B6B;
   --color-slate-light: #9B9B9B;
   --color-overlay: rgba(26, 26, 26, 0.7);
@@ -62,6 +62,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-size: 16px;
 }
 
 body {
@@ -150,7 +151,7 @@ p {
 /* ── Display / Hero Headline ── */
 .text-editorial {
   font-family: var(--font-playfair);
-  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-size: clamp(3rem, 8vw + 1rem, 7.5rem);
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.03em;
