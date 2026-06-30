@@ -93,8 +93,8 @@ export default function ShopClient() {
                 <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-10 pb-10 md:pb-14">
                     <RevealOnScroll>
                         <p className="label-luxury mb-3 text-[var(--color-gold)]">The Collection</p>
-                        <h1 className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl md:text-6xl text-[#FFFCF9] leading-tight">
-                            Artistry&nbsp;<span className="italic text-gold-shimmer">Essentials</span>
+                        <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#FFFCF9] leading-tight break-words">
+                            Artistry <span className="italic text-gold-shimmer">Essentials</span>
                         </h1>
                     </RevealOnScroll>
                 </div>
@@ -102,8 +102,8 @@ export default function ShopClient() {
 
             {/* ── Category Filter Tabs ── */}
             <div className="sticky top-[60px] z-30 bg-[var(--color-canvas)]/95 backdrop-blur-xl border-b border-[rgba(0,0,0,0.06)]">
-                <div className="max-w-[1400px] mx-auto px-4 md:px-10 overflow-x-auto">
-                    <div className="flex gap-1 py-3 min-w-max">
+                <div className="max-w-[1400px] mx-auto px-4 md:px-10 overflow-x-auto no-scrollbar">
+                    <div className="flex gap-2 md:gap-3 py-3 min-w-max">
                         {FILTER_TABS.map(tab => (
                             <button
                                 key={tab}

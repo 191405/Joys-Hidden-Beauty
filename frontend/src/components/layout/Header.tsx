@@ -96,23 +96,11 @@ export default function Header() {
                                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                             >
                                 <Logo 
-                                    variant="emblem" 
+                                    variant="text" 
                                     size={scrolled ? "small" : "default"} 
+                                    theme={scrolled ? "gold" : "white"}
                                     className="transition-all duration-500"
                                 />
-                                
-                                <motion.span
-                                    animate={{
-                                        opacity: scrolled ? 0 : 0.85,
-                                        height: scrolled ? 0 : "auto",
-                                        marginTop: scrolled ? 0 : 6,
-                                    }}
-                                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                    className="hidden sm:block text-[9px] tracking-[0.25em] font-[family-name:var(--font-cinzel)] text-[#FFFCF9] uppercase font-medium leading-none select-none overflow-hidden"
-                                >
-                                    Joys Hidden Beauty
-                                </motion.span>
-                                <span className="sr-only">Joys Hidden Beauty</span>
                             </motion.div>
                         </Link>
                     </div>

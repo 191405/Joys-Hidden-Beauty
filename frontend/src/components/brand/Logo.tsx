@@ -52,13 +52,13 @@ export default function Logo({
 
     // --- Variant: "text" (Typographic luxury serif fallback) ---
     if (variant === "text") {
-        const fontSize = size === "small" ? "text-xl" : size === "large" ? "text-3xl" : "text-2xl";
+        const fontSize = size === "small" ? "text-base sm:text-lg" : size === "large" ? "text-2xl sm:text-3xl" : "text-lg sm:text-xl";
         return (
             <span
-                className={`${fontSize} font-[family-name:var(--font-cinzel)] tracking-[0.05em] font-medium leading-none ${className}`}
-                style={{ color: theme === "white" ? "#FFFCF9" : theme === "black" ? "#1A1A1A" : color }}
+                className={`${fontSize} font-[family-name:var(--font-cinzel)] tracking-[0.15em] sm:tracking-[0.2em] font-medium leading-none uppercase whitespace-nowrap transition-all duration-500 ${className}`}
+                style={{ color: theme === "white" ? "#FFFCF9" : theme === "black" ? "#0A0A0A" : color }}
             >
-                JoysHiddenBeauty
+                Joys Hidden Beauty
             </span>
         );
     }
