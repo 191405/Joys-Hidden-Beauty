@@ -78,6 +78,66 @@ export default function LoginClient() {
     };
 
     return (
+        <>
+        {/* Liquid glass animation styles */}
+        <style jsx global>{`
+            @keyframes shimmer-sweep {
+                0% { transform: translateX(-100%) rotate(-15deg); }
+                100% { transform: translateX(200%) rotate(-15deg); }
+            }
+            @keyframes border-glow {
+                0%, 100% { opacity: 0.4; }
+                50% { opacity: 0.8; }
+            }
+            @keyframes float-subtle {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-4px); }
+            }
+            .glass-card-liquid {
+                position: relative;
+            }
+            .glass-card-liquid::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 1.5rem;
+                padding: 1px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(196, 164, 105, 0.5),
+                    rgba(255, 255, 255, 0.1),
+                    rgba(196, 164, 105, 0.3),
+                    rgba(255, 255, 255, 0.05)
+                );
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                animation: border-glow 4s ease-in-out infinite;
+                pointer-events: none;
+            }
+            .glass-card-liquid::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.08),
+                    transparent
+                );
+                animation: shimmer-sweep 6s ease-in-out infinite;
+                pointer-events: none;
+                border-radius: 1.5rem;
+            }
+            .logo-glow {
+                animation: float-subtle 5s ease-in-out infinite;
+                filter: drop-shadow(0 0 20px rgba(196, 164, 105, 0.35))
+                        drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            }
+        `}</style>
         <div className="min-h-screen relative selection:bg-[var(--color-gold)] selection:text-white">
             
             {/* ═══════════════════════════════════════════ */}
@@ -97,33 +157,33 @@ export default function LoginClient() {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/70" />
                 </div>
 
-                {/* Top branding — floats over the image */}
+                {/* Top branding — luxurious floating logo over the image */}
                 <motion.div 
-                    className="relative z-10 pt-14 px-8"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="relative z-10 pt-10 sm:pt-14 px-6 sm:px-8 logo-glow"
+                    initial={{ opacity: 0, y: -30, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" as const }}
                 >
-                    <Logo variant="text" size="large" theme="gold" className="!tracking-[0.1em] drop-shadow-lg" />
+                    <Logo variant="full" size="small" theme="white" />
                 </motion.div>
 
                 {/* Spacer — pushes form card to the bottom */}
                 <div className="flex-grow" />
 
-                {/* Bottom floating form card */}
+                {/* Bottom floating liquid glass card */}
                 <motion.div
-                    className="relative z-10 mx-4 sm:mx-8 mb-6 rounded-3xl overflow-hidden"
+                    className="relative z-10 mx-3 sm:mx-6 mb-5 rounded-3xl glass-card-liquid"
                     style={{ 
-                        background: 'rgba(255, 253, 250, 0.92)',
-                        backdropFilter: 'blur(40px)',
-                        WebkitBackdropFilter: 'blur(40px)',
-                        boxShadow: '0 -8px 60px rgba(0,0,0,0.15), 0 2px 20px rgba(0,0,0,0.08)'
+                        background: 'linear-gradient(165deg, rgba(255,253,250,0.88) 0%, rgba(255,250,245,0.95) 50%, rgba(255,253,250,0.90) 100%)',
+                        backdropFilter: 'blur(50px) saturate(1.6)',
+                        WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
+                        boxShadow: '0 -12px 80px rgba(0,0,0,0.18), 0 4px 30px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(0,0,0,0.02)'
                     }}
                     variants={cardSlideUp}
                     initial="hidden"
                     animate="visible"
                 >
-                    <div className="px-7 sm:px-10 pt-8 pb-8">
+                    <div className="relative z-10 px-6 sm:px-9 pt-7 pb-7">
                         {/* Decorative gold accent bar */}
                         <div className="w-10 h-[3px] bg-[var(--color-gold)] rounded-full mb-6 mx-auto" />
                         
@@ -236,6 +296,7 @@ export default function LoginClient() {
                     </div>
                 </motion.div>
             </div>
+
 
             {/* ═══════════════════════════════════════════ */}
             {/* DESKTOP — Editorial split-screen             */}
@@ -369,5 +430,6 @@ export default function LoginClient() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
