@@ -83,10 +83,10 @@ export default function RegisterClient() {
             <div className="absolute inset-0 lg:hidden overflow-hidden">
                 <div 
                     className="absolute inset-0 bg-cover bg-center transform scale-105"
-                    style={{ backgroundImage: `url('/images/login-portrait.jpg')` }}
+                    style={{ backgroundImage: `url('/images/auth-mobile-bg.jpg')` }}
                 />
                 {/* Overlay to ensure the glass box pops */}
-                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute inset-0 bg-black/40" />
             </div>
 
             {/* Left — Full Bleed Editorial Image (Desktop Only) */}
