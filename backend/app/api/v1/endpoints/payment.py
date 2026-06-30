@@ -110,7 +110,7 @@ def initiate_payment(
         if service:
             services_desc.append(service.name)
     product_name = ", ".join(services_desc) if services_desc else "Luxury Wellness Services"
-    product_description = f"{product_name} — Bespoke Wellness Booking Deposit"
+    product_description = f"{product_name} — Booking Deposit"
 
     try:
         result = create_cashier_payment(
@@ -257,7 +257,7 @@ def verify_payment(
 
         user = db.query(User).filter(User.id == user_id).first()
         if user:
-            services_str = ", ".join(services_list) if services_list else "Bespoke Services"
+            services_str = ", ".join(services_list) if services_list else "Services"
             background_tasks.add_task(
                 send_email,
                 to=user.email,

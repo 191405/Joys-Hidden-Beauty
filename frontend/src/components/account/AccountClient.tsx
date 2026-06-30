@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import { apiFetch, getToken, clearToken } from "@/lib/api";
+import { formatTime, formatDate } from "@/lib/formatters";
 import Logo from "@/components/brand/Logo";
 
 interface UserProfile {
@@ -43,14 +44,14 @@ interface RecommendedProduct {
 }
 
 const AVAILABLE_SKIN_TYPES = ["Oily", "Dry", "Combination", "Normal", "Sensitive"];
-const AVAILABLE_CONCERNS = ["Hydation", "Anti-aging", "Acne", "Redness", "Hyperpigmentation", "Brightening", "Pores"];
+const AVAILABLE_CONCERNS = ["Hydration", "Anti-aging", "Acne", "Redness", "Hyperpigmentation", "Brightening", "Pores"];
 const AVAILABLE_ALLERGIES = ["Fragrance", "Parabens", "Sulfates", "Niacinamide", "Retinol", "Salicylic Acid", "Gluten"];
 
 const TABS = [
     { id: "profile" as const, label: "My Profile" },
     { id: "appointments" as const, label: "My Bookings" },
     { id: "skin" as const, label: "Skin Consultation" },
-    { id: "recs" as const, label: "Bespoke Matches" },
+    { id: "recs" as const, label: "Matches" },
 ];
 
 export default function AccountClient() {
@@ -134,7 +135,7 @@ export default function AccountClient() {
             const recsData = await apiFetch<RecommendedProduct[]>("/user/recommendations");
             setRecommendations(recsData);
             
-            alert("Bespoke profile updated successfully.");
+            alert("Profile updated successfully.");
         } catch (err) {
             console.error("Update failed:", err);
             alert("Failed to update profile.");
@@ -160,23 +161,13 @@ export default function AccountClient() {
         router.push("/");
     };
 
-    const formatTime = (isoString: string) => {
-        if (!isoString) return "";
-        return new Date(isoString).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    };
-
-    const formatDate = (isoString: string) => {
-        if (!isoString) return "";
-        return new Date(isoString).toLocaleDateString("en", { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-    };
-
     if (loading) {
         return (
             <div className="min-h-screen pt-40 flex items-start justify-center bg-[var(--color-canvas)]">
                 <div className="animate-pulse text-center">
                     <div className="h-12 w-12 rounded-full border-t border-[var(--color-gold)] animate-spin mx-auto mb-6" />
                     <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.3em] uppercase text-[var(--color-gold-dark)]">
-                        Loading VIP Dashboard
+                        Loading Dashboard
                     </p>
                 </div>
             </div>
@@ -194,7 +185,7 @@ export default function AccountClient() {
                     <div className="text-center mb-16 flex flex-col items-center justify-center">
                         <Logo variant="emblem" size="default" theme="gold" className="mb-4 animate-pulse" />
                         <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.3em] uppercase text-[var(--color-gold)] mb-4">
-                            VIP Inner Circle
+                            Client Portal
                         </p>
                         <h1 className="font-[family-name:var(--font-playfair)] text-4xl mb-3">
                             Welcome Back, {user.first_name}
@@ -353,7 +344,7 @@ export default function AccountClient() {
                                 <div className="text-center py-16">
                                     <p className="text-[var(--color-slate)] mb-8">No scheduled appointments</p>
                                     <Link href="/booking" className="btn-gold text-xs">
-                                        Schedule Luxury Experience
+                                        Schedule an Appointment
                                     </Link>
                                 </div>
                             )}
@@ -474,7 +465,7 @@ export default function AccountClient() {
                                     disabled={updating}
                                     className="btn-gold w-full py-4 text-xs tracking-widest uppercase font-bold"
                                 >
-                                    {updating ? "Saving Skin Profile..." : "Update Skin Consultation Profile"}
+                                    {updating ? "Saving Skin Profile..." : "Update Skin Profile"}
                                 </button>
                             </form>
                         </motion.div>
@@ -492,10 +483,10 @@ export default function AccountClient() {
                         >
                             <div className="text-center mb-10">
                                 <p className="text-[10px] tracking-[0.2em] font-[family-name:var(--font-cinzel)] text-[var(--color-gold)] uppercase font-bold mb-2">
-                                    PERSONALIZED FORMULATIONS
+                                    PERSONALIZED MATCHES
                                 </p>
                                 <h2 className="font-[family-name:var(--font-playfair)] text-2xl italic text-[var(--color-slate-light)]">
-                                    Bespoke recommendations matching your skin profile
+                                    Recommendations matching your skin profile
                                 </h2>
                             </div>
 
@@ -545,7 +536,7 @@ export default function AccountClient() {
                             ) : (
                                 <div className="text-center py-16 bg-white border border-[rgba(26,26,26,0.08)] p-10">
                                     <p className="text-[var(--color-slate)] text-sm mb-4 leading-relaxed max-w-sm mx-auto">
-                                        Please complete your Skin Consultation profile to activate our neural beauty matching recommendations.
+                                        Please complete your Skin Consultation profile to activate our matching recommendations.
                                     </p>
                                     <button
                                         onClick={() => setActiveTab("skin")}

@@ -13,8 +13,8 @@ def extract_emblem():
     img = Image.open(img_path).convert("RGBA")
     w, h = img.size
     
-    # Perfect rectangular crop to capture the full width of the JHB monogram and face without clipping,
-    # while keeping the bottom safely above the 'JOYS HIDDEN BEAUTY' text.
+    # Rectangular crop to capture the full width of the JHB monogram
+    # while keeping the bottom above the text.
     left = int(w * 0.28)
     right = int(w * 0.72)
     top = int(h * 0.18)
@@ -23,7 +23,7 @@ def extract_emblem():
     print(f"Cropping emblem at bounds: left={left}, top={top}, right={right}, bottom={bottom}...")
     cropped = img.crop((left, top, right, bottom))
     
-    # We will process each pixel to create the transparent, anti-aliased assets
+    # Process pixels for transparency and anti-aliasing
     pixels = cropped.load()
     width, height = cropped.size
     
@@ -43,14 +43,9 @@ def extract_emblem():
             r, g, b, a = pixels[x, y]
             
             # Gold colors have higher Red and Green, and lower Blue.
-            # Pink background has R, G, B channels very close to each other (low saturation).
-            # We use (Red - Blue) as a strong indicator of the golden emblem.
             diff = r - b
             
-            # Anti-aliasing / soft edge blending:
-            # We define a low threshold where background is fully transparent (diff <= 18)
-            # and a high threshold where emblem is fully opaque (diff >= 32).
-            # We interpolate the alpha between these values.
+            # Anti-aliasing edge blending:
             t_low = 18
             t_high = 32
             

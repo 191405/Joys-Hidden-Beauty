@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RevealOnScroll from "@/components/ui/RevealOnScroll";
 import { BookingService, type Service, type AvailabilitySlot } from "@/services/booking";
+import { formatTime } from "@/lib/formatters";
 
 interface CartItem {
     service: Service;
@@ -143,11 +144,6 @@ export default function BookingClient() {
         }
     };
 
-    // Helper to format time from ISO string
-    const formatTime = (isoString: string) => {
-        return new Date(isoString).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    };
-
     // Financial calculations
     const getCartTotal = () => bookingCart.reduce((sum, item) => sum + item.service.price, 0);
     const getActiveTotal = () => selectedService ? selectedService.price : 0;
@@ -165,7 +161,7 @@ export default function BookingClient() {
                 <RevealOnScroll>
                     <div className="text-center mb-12">
                         <h1 className="font-[family-name:var(--font-playfair)] text-4xl md:text-5xl mb-4">
-                            Book an Experience
+                            Book an Appointment
                         </h1>
                         <div className="divider-gold mx-auto" />
                     </div>
@@ -199,10 +195,10 @@ export default function BookingClient() {
                     >
                         <div className="text-center sm:text-left">
                             <p className="font-[family-name:var(--font-cinzel)] text-[9px] tracking-[0.2em] text-[var(--color-gold-dark)] font-bold mb-1">
-                                ACTIVE BOOKING SESSION
+                                ACTIVE BOOKING
                             </p>
                             <p className="text-xs text-[var(--color-ink)]">
-                                You have <span className="font-semibold">{bookingCart.length} service(s)</span> added to your luxury session.
+                                You have <span className="font-semibold">{bookingCart.length} service(s)</span> added to your booking.
                             </p>
                         </div>
                         <button
@@ -225,7 +221,7 @@ export default function BookingClient() {
                             exit={{ opacity: 0, x: -15 }}
                         >
                             <h2 className="font-[family-name:var(--font-playfair)] text-xl sm:text-2xl mb-8 text-center italic text-[var(--color-slate-light)]">
-                                Select service to add to your session
+                                Select a service to add
                             </h2>
                             <div className="space-y-4">
                                 {services.map((s) => {
@@ -264,7 +260,7 @@ export default function BookingClient() {
                                 })}
                                 {services.length === 0 && (
                                     <div className="text-center text-[var(--color-slate)] py-8">
-                                        Loading luxury services...
+                                        Loading services...
                                     </div>
                                 )}
                             </div>
@@ -393,7 +389,7 @@ export default function BookingClient() {
                             transition={{ duration: 0.4 }}
                         >
                             <h2 className="font-[family-name:var(--font-playfair)] text-2xl mb-8 text-center">
-                                Review Your Luxury Session
+                                Review Your Booking
                             </h2>
 
                             {/* Booking List Cards */}
@@ -463,7 +459,7 @@ export default function BookingClient() {
                                     <div className="flex justify-between items-center text-[var(--color-slate)] opacity-85">
                                         <div>
                                             <span className="text-xs block">Outstanding Balance (70%)</span>
-                                            <span className="text-[9px] opacity-75">To be settled at the salon session</span>
+                                            <span className="text-[9px] opacity-75">To be settled at the salon</span>
                                         </div>
                                         <span className="text-sm font-medium">₦{getRemainingTotal().toLocaleString()}</span>
                                     </div>

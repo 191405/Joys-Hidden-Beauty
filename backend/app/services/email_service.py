@@ -96,7 +96,7 @@ class EmailService:
                 <p>Dear {first_name},</p>
                 <p>The wait is finally over. We are thrilled to invite you to experience Joy's Hidden Beauty firsthand.</p>
                 <p>As one of our esteemed waitlist members, you now have exclusive priority access to book your initial bespoke beauty session and secure your place.</p>
-                <a href="http://localhost:3000/booking" class="btn">Enter the Portal</a>
+                <a href="{get_settings().FRONTEND_URL}/booking" class="btn">Enter the Portal</a>
                 <p>If you require direct assistance in styling your experience, simply reply to this email.</p>
                 <div class="footer">
                     &copy; 2026 Joy's Hidden Beauty. All rights reserved.<br>
@@ -206,7 +206,7 @@ def send_email(to: str, template_name: str, **kwargs):
             <p>Dear {first_name},</p>
             <p>Thank you for creating an account with Joy's Hidden Beauty. We are absolutely thrilled to welcome you to our community.</p>
             <p>As a member, you now have exclusive access to our premium skincare collections, bespoke beauty services, and personalized recommendations.</p>
-            <a href="{{get_settings().FRONTEND_URL}}/account" class="btn">Explore Your Account</a>
+            <a href="{get_settings().FRONTEND_URL}/account" class="btn">Explore Your Account</a>
             <div class="footer">
                 &copy; 2026 Joy's Hidden Beauty. All rights reserved.<br>
                 Experience Quality, Redefined.

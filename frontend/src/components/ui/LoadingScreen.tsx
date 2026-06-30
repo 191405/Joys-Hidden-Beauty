@@ -41,7 +41,7 @@ export default function LoadingScreen() {
                     transition={{ delay: 0.5, duration: 0.6 }}
                     className="font-[family-name:var(--font-cinzel)] text-[9px] tracking-[0.35em] text-[#FFFCF9]/70 uppercase mt-8 select-none"
                 >
-                    Loading Luxury
+                    Loading
                 </motion.p>
             </div>
         </div>
