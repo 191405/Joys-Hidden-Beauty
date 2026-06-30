@@ -79,15 +79,15 @@ export default function RegisterClient() {
             </div>
 
             {/* Right — Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center px-8 md:px-16 lg:px-24 py-20 pt-32 md:pt-20">
+            <div className="w-full lg:w-1/2 flex items-center justify-center px-6 md:px-16 lg:px-24 py-20 pt-28 md:pt-20">
                 <motion.div
                     className="w-full max-w-md bg-white/50 backdrop-blur-md p-8 md:p-10 border border-[rgba(26,26,26,0.05)] shadow-[0_8px_40px_rgba(0,0,0,0.02)]"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 >
-                    <div className="flex justify-center mb-8">
-                        <Logo variant="full" size="small" theme="gold" />
+                    <div className="flex justify-center mb-6">
+                        <Logo variant="text" size="small" theme="gold" />
                     </div>
                     <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.3em] uppercase text-[var(--color-gold)] mb-4 text-center">
                         Join the Inner Circle

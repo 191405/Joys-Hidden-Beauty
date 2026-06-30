@@ -52,10 +52,10 @@ export default function Logo({
 
     // --- Variant: "text" (Typographic luxury serif fallback) ---
     if (variant === "text") {
-        const fontSize = size === "small" ? "text-base sm:text-lg" : size === "large" ? "text-2xl sm:text-3xl" : "text-lg sm:text-xl";
+        const fontSize = size === "small" ? "text-xs sm:text-sm md:text-base" : size === "large" ? "text-xl sm:text-2xl md:text-3xl" : "text-[11px] sm:text-sm md:text-lg";
         return (
             <span
-                className={`${fontSize} font-[family-name:var(--font-cinzel)] tracking-[0.15em] sm:tracking-[0.2em] font-medium leading-none uppercase whitespace-nowrap transition-all duration-500 ${className}`}
+                className={`${fontSize} font-[family-name:var(--font-cinzel)] tracking-[0.1em] sm:tracking-[0.15em] font-medium leading-none uppercase whitespace-nowrap transition-all duration-500 ${className}`}
                 style={{ color: theme === "white" ? "#FFFCF9" : theme === "black" ? "#0A0A0A" : color }}
             >
                 Joys Hidden Beauty
