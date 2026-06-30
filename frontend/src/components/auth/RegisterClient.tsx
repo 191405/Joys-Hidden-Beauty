@@ -77,8 +77,19 @@ export default function RegisterClient() {
     };
 
     return (
-        <div className="min-h-screen flex bg-[var(--color-canvas)] selection:bg-[var(--color-gold)] selection:text-white">
-            {/* Left — Full Bleed Editorial Image */}
+        <div className="min-h-screen flex relative bg-[var(--color-canvas)] lg:bg-transparent selection:bg-[var(--color-gold)] selection:text-white">
+            
+            {/* Mobile/Tablet Background Image (Hidden on Desktop) */}
+            <div className="absolute inset-0 lg:hidden overflow-hidden">
+                <div 
+                    className="absolute inset-0 bg-cover bg-center transform scale-105"
+                    style={{ backgroundImage: `url('/images/login-portrait.jpg')` }}
+                />
+                {/* Overlay to ensure the glass box pops */}
+                <div className="absolute inset-0 bg-black/20" />
+            </div>
+
+            {/* Left — Full Bleed Editorial Image (Desktop Only) */}
             <div className="hidden lg:block lg:w-[55%] relative overflow-hidden">
                 <div 
                     className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[15s] hover:scale-100"
@@ -87,23 +98,23 @@ export default function RegisterClient() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent transition-opacity duration-1000 hover:opacity-80" />
             </div>
 
-            {/* Right — Clean Minimalist Canvas */}
-            <div className="w-full lg:w-[45%] flex items-center justify-center px-6 sm:px-12 md:px-20 py-20 pt-28 md:pt-20 bg-[var(--color-canvas)]">
+            {/* Right — Clean Minimalist Canvas (Desktop) / Glass Form (Mobile) */}
+            <div className="w-full lg:w-[45%] flex items-center justify-center px-4 sm:px-12 md:px-20 py-16 pt-24 md:pt-20 relative z-10 lg:bg-[var(--color-canvas)]">
                 <motion.div
-                    className="w-full max-w-sm"
+                    className="w-full max-w-sm bg-[var(--color-canvas)]/85 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none p-8 sm:p-10 lg:p-0 border border-[rgba(255,255,255,0.3)] lg:border-none shadow-2xl lg:shadow-none rounded-2xl lg:rounded-none"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    <motion.div variants={itemVariants} className="flex justify-start mb-8">
+                    <motion.div variants={itemVariants} className="flex justify-center lg:justify-start mb-8">
                         <Logo variant="text" size="large" theme="gold" className="!tracking-[0.1em]" />
                     </motion.div>
                     
-                    <motion.p variants={itemVariants} className="font-[family-name:var(--font-cinzel)] text-[10px] sm:text-xs tracking-[0.3em] uppercase text-[var(--color-gold)] mb-3">
+                    <motion.p variants={itemVariants} className="font-[family-name:var(--font-cinzel)] text-[10px] sm:text-xs tracking-[0.3em] uppercase text-[var(--color-gold)] mb-3 text-center lg:text-left">
                         Join the Inner Circle
                     </motion.p>
                     
-                    <motion.h1 variants={itemVariants} className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl mb-8 text-[var(--color-ink)] leading-tight">
+                    <motion.h1 variants={itemVariants} className="font-[family-name:var(--font-playfair)] text-4xl sm:text-5xl mb-8 text-[var(--color-ink)] leading-tight text-center lg:text-left">
                         Create Account
                     </motion.h1>
 
@@ -207,7 +218,7 @@ export default function RegisterClient() {
 
                     <motion.div variants={itemVariants} className="relative flex items-center justify-center mt-10 mb-8">
                         <div className="border-t border-[rgba(26,26,26,0.1)] w-full"></div>
-                        <span className="bg-[var(--color-canvas)] px-4 text-[9px] tracking-widest uppercase text-[var(--color-slate)] absolute">Or</span>
+                        <span className="bg-[var(--color-canvas)] lg:bg-transparent px-4 text-[9px] tracking-widest uppercase text-[var(--color-slate)] absolute">Or</span>
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
@@ -226,7 +237,7 @@ export default function RegisterClient() {
                         </button>
                     </motion.div>
 
-                    <motion.p variants={itemVariants} className="text-left mt-10 text-xs text-[var(--color-slate)] tracking-wide">
+                    <motion.p variants={itemVariants} className="text-center lg:text-left mt-10 text-xs text-[var(--color-slate)] tracking-wide">
                         Already a member?{" "}
                         <Link href="/auth/login" className="text-[var(--color-ink)] hover:text-[var(--color-gold)] transition-colors ml-1 font-medium underline underline-offset-4 decoration-[rgba(0,0,0,0.1)] hover:decoration-[var(--color-gold)]">
                             Sign in
