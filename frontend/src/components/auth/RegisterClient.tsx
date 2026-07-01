@@ -144,7 +144,9 @@ export default function RegisterClient() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.1 }}
                 >
-                    <Logo variant="full" size="small" theme="white" />
+                    <div className="inline-flex items-center bg-white/[0.12] backdrop-blur-xl border border-white/[0.15] rounded-full px-5 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.25)]">
+                        <Logo variant="full" size="small" theme="white" />
+                    </div>
                 </motion.div>
 
                 {/* Spacer to push form to bottom on mobile */}
