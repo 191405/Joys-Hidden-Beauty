@@ -16,6 +16,7 @@ export default function RegisterClient() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -63,181 +64,248 @@ export default function RegisterClient() {
         onError: () => setError("Google login failed. Please try again."),
     });
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-        }
+    const stagger = {
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.06, delayChildren: 0.12 } }
     };
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+    const fadeUp = {
+        hidden: { opacity: 0, y: 14 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     };
+
+    // Shared input style generator
+    const inputClasses = (field: string) =>
+        `w-full bg-white/[0.07] lg:bg-[var(--color-ink)]/[0.03] border border-white/10 lg:border-[var(--color-ink)]/10 rounded-xl px-4 py-3.5 text-[15px] text-white lg:text-[var(--color-ink)] placeholder:text-white/30 lg:placeholder:text-[var(--color-slate-light)] focus:outline-none focus:bg-white/[0.12] lg:focus:bg-white transition-all ${
+            field === 'password' || field === 'confirmPassword' ? 'pr-16' : ''
+        }`;
+
+    const ringClasses = (field: string) =>
+        `relative rounded-xl overflow-hidden transition-all duration-300 ${
+            focusedField === field 
+                ? 'ring-2 ring-[var(--color-gold)]/40 shadow-[0_0_20px_rgba(226,178,39,0.08)]' 
+                : ''
+        }`;
 
     return (
-        <div className="min-h-screen flex relative bg-[#FAF8F5] lg:bg-[var(--color-canvas)] selection:bg-[var(--color-gold)] selection:text-white overflow-hidden">
+        <>
+        <style jsx global>{`
+            @keyframes auth-gradient-drift {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+            }
+            @keyframes auth-shine {
+                0% { left: -80%; }
+                100% { left: 130%; }
+            }
+        `}</style>
+
+        <div className="min-h-[100dvh] flex relative bg-[var(--color-canvas)] selection:bg-[var(--color-gold)]/30 selection:text-[var(--color-ink)] overflow-hidden">
             
-            {/* Left Column — Full Bleed Editorial Image (Desktop Only) */}
-            <div className="hidden lg:block lg:w-[55%] relative overflow-hidden flex-shrink-0">
+            {/* LEFT — Editorial Image (Desktop) */}
+            <div className="hidden lg:flex lg:w-[56%] relative overflow-hidden flex-shrink-0">
                 <div 
-                    className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[20s] hover:scale-100"
+                    className="absolute inset-0 bg-cover bg-center scale-[1.03] transition-transform duration-[25s] hover:scale-100"
                     style={{ backgroundImage: `url('/images/login-portrait.jpg')` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-[var(--color-canvas)]/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                
+                <motion.div 
+                    className="absolute bottom-10 left-10 z-10"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.2, delay: 0.5 }}
+                >
+                    <Logo variant="full" size="default" theme="white" />
+                </motion.div>
             </div>
 
-            {/* Right Column — Responsive Content Wrapper */}
-            <div className="w-full lg:w-[45%] flex flex-col items-center justify-center min-h-screen relative z-10 px-4 sm:px-6 lg:px-12 py-12 overflow-y-auto">
+            {/* RIGHT — Form Column */}
+            <div className="w-full lg:w-[44%] flex flex-col min-h-[100dvh] relative z-10">
                 
-                {/* Mobile Full-Screen Background Image (Hidden on Desktop) */}
-                <div className="absolute inset-0 lg:hidden pointer-events-none z-0 fixed">
+                {/* Mobile Background */}
+                <div className="absolute inset-0 lg:hidden z-0">
                     <div 
-                        className="absolute inset-0 bg-cover"
+                        className="absolute inset-0 bg-cover bg-no-repeat"
                         style={{ 
                             backgroundImage: `url('/images/auth-mobile-bg.jpg')`, 
-                            backgroundPosition: 'center 15%' 
+                            backgroundPosition: 'center 20%' 
                         }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent" />
                 </div>
 
-                {/* Floating Frosted Logo Pill (Mobile Only) */}
+                {/* Mobile Logo */}
                 <motion.div 
-                    className="lg:hidden absolute top-8 left-6 z-20"
-                    initial={{ opacity: 0, y: -20 }}
+                    className="lg:hidden relative z-20 pt-10 pb-4 px-7"
+                    initial={{ opacity: 0, y: -15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    transition={{ duration: 0.8, delay: 0.1 }}
                 >
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full shadow-lg flex items-center justify-center">
-                        <Logo variant="full" size="small" theme="white" />
-                    </div>
+                    <Logo variant="full" size="small" theme="white" />
                 </motion.div>
 
-                {/* Clean, Elegant Form Card */}
-                <motion.div
-                    className="relative z-10 w-full max-w-[420px] bg-white/95 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none border border-white/50 lg:border-none shadow-[0_8px_40px_rgba(0,0,0,0.12)] lg:shadow-none rounded-[32px] lg:rounded-none p-8 sm:p-10 lg:p-0 my-16 lg:my-0"
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                >
+                {/* Spacer to push form to bottom on mobile */}
+                <div className="flex-1 lg:hidden" />
+
+                {/* Form Area — scrollable on mobile for long forms */}
+                <div className="relative z-10 w-full flex flex-col items-center lg:justify-center lg:flex-1 px-6 sm:px-8 lg:px-14 pb-8 lg:pb-0 overflow-y-auto">
+                    
                     <motion.div
-                        variants={containerVariants}
+                        className="w-full max-w-[400px]"
+                        variants={stagger}
                         initial="hidden"
                         animate="visible"
-                        className="w-full flex flex-col"
                     >
-                        {/* Logo for Desktop Only */}
-                        <motion.div variants={itemVariants} className="hidden lg:flex justify-start mb-10">
-                            <Logo variant="text" size="large" theme="gold" className="!tracking-[0.1em]" />
+                        {/* Desktop Logo */}
+                        <motion.div variants={fadeUp} className="hidden lg:block mb-10">
+                            <Logo variant="text" size="large" theme="gold" />
                         </motion.div>
 
-                        {/* Title Header */}
-                        <motion.div variants={itemVariants} className="flex flex-col items-center lg:items-start space-y-3 mb-8">
-                            <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.3em] uppercase text-[var(--color-gold)]">
-                                Join the Waitlist
+                        {/* Header */}
+                        <motion.div variants={fadeUp} className="mb-8">
+                            <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.35em] uppercase text-[var(--color-gold)] lg:text-[var(--color-gold-dark)] mb-3">
+                                Begin Your Journey
                             </p>
-                            <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl text-[var(--color-ink)] leading-tight">
+                            <h1 className="font-[family-name:var(--font-playfair)] text-[28px] sm:text-[32px] lg:text-[38px] text-white lg:text-[var(--color-ink)] leading-[1.1] font-normal">
                                 Create Account
                             </h1>
+                            <div className="w-10 h-[2px] bg-gradient-to-r from-[var(--color-gold)] to-transparent mt-4 rounded-full" />
                         </motion.div>
 
-                        <form onSubmit={handleSubmit} className="flex flex-col space-y-5 w-full">
-                            {/* Full Name Input */}
-                            <motion.div variants={itemVariants} className="relative group w-full">
-                                <input
-                                    type="text"
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                    className="peer w-full bg-[#F5F5F5] lg:bg-white/50 border border-transparent lg:border-[rgba(0,0,0,0.05)] rounded-2xl px-5 py-3.5 text-[15px] focus:outline-none focus:bg-white focus:border-[var(--color-gold)] focus:ring-4 focus:ring-[var(--color-gold)]/10 transition-all text-[var(--color-ink)] placeholder-transparent"
-                                    placeholder="Full Name"
-                                    required
-                                />
-                                <label className="absolute left-5 top-3.5 text-[13px] text-[var(--color-slate)] transition-all pointer-events-none peer-placeholder-shown:text-[15px] peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:left-4 peer-focus:text-[11px] peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-[var(--color-gold)] rounded-md">
+                        {/* Form */}
+                        <form onSubmit={handleSubmit} className="w-full">
+                            
+                            {/* Full Name */}
+                            <motion.div variants={fadeUp} className="mb-4">
+                                <label className="block text-[10px] tracking-[0.2em] uppercase text-white/50 lg:text-[var(--color-slate)] mb-2 font-[family-name:var(--font-cinzel)]">
                                     Full Name
                                 </label>
+                                <div className={ringClasses('name')}>
+                                    <input
+                                        type="text"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        onFocus={() => setFocusedField('name')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={inputClasses('name')}
+                                        placeholder="Your full name"
+                                        required
+                                    />
+                                </div>
                             </motion.div>
 
-                            {/* Email Input */}
-                            <motion.div variants={itemVariants} className="relative group w-full">
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="peer w-full bg-[#F5F5F5] lg:bg-white/50 border border-transparent lg:border-[rgba(0,0,0,0.05)] rounded-2xl px-5 py-3.5 text-[15px] focus:outline-none focus:bg-white focus:border-[var(--color-gold)] focus:ring-4 focus:ring-[var(--color-gold)]/10 transition-all text-[var(--color-ink)] placeholder-transparent"
-                                    placeholder="Email Address"
-                                    required
-                                />
-                                <label className="absolute left-5 top-3.5 text-[13px] text-[var(--color-slate)] transition-all pointer-events-none peer-placeholder-shown:text-[15px] peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:left-4 peer-focus:text-[11px] peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-[var(--color-gold)] rounded-md">
+                            {/* Email */}
+                            <motion.div variants={fadeUp} className="mb-4">
+                                <label className="block text-[10px] tracking-[0.2em] uppercase text-white/50 lg:text-[var(--color-slate)] mb-2 font-[family-name:var(--font-cinzel)]">
                                     Email Address
                                 </label>
+                                <div className={ringClasses('email')}>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        onFocus={() => setFocusedField('email')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={inputClasses('email')}
+                                        placeholder="your@email.com"
+                                        required
+                                    />
+                                </div>
                             </motion.div>
 
-                            {/* Password Input */}
-                            <motion.div variants={itemVariants} className="relative group w-full">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="peer w-full bg-[#F5F5F5] lg:bg-white/50 border border-transparent lg:border-[rgba(0,0,0,0.05)] rounded-2xl px-5 py-3.5 pr-14 text-[15px] focus:outline-none focus:bg-white focus:border-[var(--color-gold)] focus:ring-4 focus:ring-[var(--color-gold)]/10 transition-all text-[var(--color-ink)] placeholder-transparent"
-                                    placeholder="Password"
-                                    required
-                                />
-                                <label className="absolute left-5 top-3.5 text-[13px] text-[var(--color-slate)] transition-all pointer-events-none peer-placeholder-shown:text-[15px] peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:left-4 peer-focus:text-[11px] peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-[var(--color-gold)] rounded-md">
+                            {/* Password */}
+                            <motion.div variants={fadeUp} className="mb-4">
+                                <label className="block text-[10px] tracking-[0.2em] uppercase text-white/50 lg:text-[var(--color-slate)] mb-2 font-[family-name:var(--font-cinzel)]">
                                     Password
                                 </label>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-[16px] text-[10px] tracking-wider uppercase text-[var(--color-slate)] hover:text-[var(--color-gold)] transition-colors"
-                                >
-                                    {showPassword ? "Hide" : "Show"}
-                                </button>
+                                <div className={ringClasses('password')}>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        onFocus={() => setFocusedField('password')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={inputClasses('password')}
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] tracking-[0.1em] uppercase text-white/40 lg:text-[var(--color-slate)] hover:text-[var(--color-gold)] transition-colors font-medium"
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
+                                </div>
                             </motion.div>
 
-                            {/* Confirm Password Input */}
-                            <motion.div variants={itemVariants} className="relative group w-full">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="peer w-full bg-[#F5F5F5] lg:bg-white/50 border border-transparent lg:border-[rgba(0,0,0,0.05)] rounded-2xl px-5 py-3.5 pr-14 text-[15px] focus:outline-none focus:bg-white focus:border-[var(--color-gold)] focus:ring-4 focus:ring-[var(--color-gold)]/10 transition-all text-[var(--color-ink)] placeholder-transparent"
-                                    placeholder="Confirm Password"
-                                    required
-                                />
-                                <label className="absolute left-5 top-3.5 text-[13px] text-[var(--color-slate)] transition-all pointer-events-none peer-placeholder-shown:text-[15px] peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:left-4 peer-focus:text-[11px] peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-[var(--color-gold)] rounded-md">
+                            {/* Confirm Password */}
+                            <motion.div variants={fadeUp} className="mb-6">
+                                <label className="block text-[10px] tracking-[0.2em] uppercase text-white/50 lg:text-[var(--color-slate)] mb-2 font-[family-name:var(--font-cinzel)]">
                                     Confirm Password
                                 </label>
+                                <div className={ringClasses('confirmPassword')}>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        onFocus={() => setFocusedField('confirmPassword')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={inputClasses('confirmPassword')}
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                </div>
                             </motion.div>
 
-                            {/* Error Message */}
+                            {/* Error */}
                             <AnimatePresence>
                                 {error && (
                                     <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="text-red-600 text-xs bg-red-50 py-3 px-4 rounded-xl border border-red-100 overflow-hidden"
+                                        initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                        animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                                        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                                        className="text-red-300 lg:text-red-600 text-[12px] bg-red-500/10 lg:bg-red-50 py-3 px-4 rounded-xl border border-red-500/20 lg:border-red-200 overflow-hidden"
                                     >
                                         {error}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
-                            {/* Submit Button */}
-                            <motion.div variants={itemVariants} className="pt-2">
+                            {/* Submit */}
+                            <motion.div variants={fadeUp}>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-[#1A1A1A] hover:bg-[var(--color-gold)] hover:shadow-xl hover:shadow-[var(--color-gold)]/20 text-white py-[16px] text-[11px] tracking-[0.2em] uppercase rounded-2xl transition-all duration-300 disabled:opacity-50 relative overflow-hidden group"
+                                    className="w-full relative overflow-hidden bg-gradient-to-r from-[var(--color-gold-dark)] via-[var(--color-gold)] to-[var(--color-gold-dark)] text-white py-4 text-[11px] tracking-[0.25em] uppercase rounded-xl transition-all duration-500 disabled:opacity-50 group hover:shadow-[0_8px_30px_rgba(226,178,39,0.3)] hover:scale-[1.01] active:scale-[0.99]"
+                                    style={{ backgroundSize: '200% 100%', animation: 'auth-gradient-drift 6s ease infinite' }}
                                 >
-                                    <span className="relative z-10 flex items-center justify-center gap-2 transition-transform duration-300 group-hover:scale-105">
-                                        {loading ? "Creating Account..." : "Create Account"}
-                                        {!loading && (
-                                            <svg className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                            </svg>
+                                    <div 
+                                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                        style={{
+                                            background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%)',
+                                            animation: 'auth-shine 2s ease-in-out infinite',
+                                        }}
+                                    />
+                                    <span className="relative z-10 flex items-center justify-center gap-2 font-medium">
+                                        {loading ? (
+                                            <>
+                                                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                                </svg>
+                                                Creating...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Create Account
+                                                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                </svg>
+                                            </>
                                         )}
                                     </span>
                                 </button>
@@ -245,20 +313,21 @@ export default function RegisterClient() {
                         </form>
 
                         {/* Divider */}
-                        <motion.div variants={itemVariants} className="relative flex items-center justify-center mt-8 mb-6">
-                            <div className="border-t border-[rgba(0,0,0,0.05)] w-full"></div>
-                            <span className="bg-white/95 lg:bg-[var(--color-canvas)] px-4 text-[9px] tracking-widest uppercase text-[var(--color-slate)] absolute">Or</span>
+                        <motion.div variants={fadeUp} className="relative flex items-center my-7">
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 lg:via-[var(--color-ink)]/10 to-transparent" />
+                            <span className="px-4 text-[9px] tracking-[0.2em] uppercase text-white/30 lg:text-[var(--color-slate)]">or</span>
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 lg:via-[var(--color-ink)]/10 to-transparent" />
                         </motion.div>
 
-                        {/* Google Button */}
-                        <motion.div variants={itemVariants}>
+                        {/* Google */}
+                        <motion.div variants={fadeUp}>
                             <button
                                 type="button"
                                 onClick={() => loginWithGoogle()}
                                 disabled={loading}
-                                className="w-full flex items-center justify-center gap-3 bg-white/50 lg:bg-transparent border border-[rgba(0,0,0,0.08)] hover:border-[var(--color-gold)] hover:bg-[var(--color-gold)]/5 text-[var(--color-ink)] transition-all py-3.5 text-[11px] tracking-wider uppercase rounded-2xl group"
+                                className="w-full flex items-center justify-center gap-3 bg-white/[0.06] lg:bg-transparent border border-white/10 lg:border-[var(--color-ink)]/10 hover:border-[var(--color-gold)]/40 text-white/70 lg:text-[var(--color-ink)] transition-all py-3.5 text-[11px] tracking-[0.1em] uppercase rounded-xl group"
                             >
-                                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -269,15 +338,19 @@ export default function RegisterClient() {
                         </motion.div>
 
                         {/* Sign In Link */}
-                        <motion.p variants={itemVariants} className="mt-8 text-center lg:text-left text-[13px] text-[var(--color-slate)]">
+                        <motion.p variants={fadeUp} className="mt-7 mb-6 lg:mb-0 text-center lg:text-left text-[13px] text-white/50 lg:text-[var(--color-slate)]">
                             Already have an account?{" "}
-                            <Link href="/auth/login" className="text-[var(--color-ink)] hover:text-[var(--color-gold)] transition-colors ml-1 font-medium underline underline-offset-4 decoration-transparent hover:decoration-[var(--color-gold)]">
+                            <Link 
+                                href="/auth/login" 
+                                className="text-[var(--color-gold)] lg:text-[var(--color-ink)] hover:text-[var(--color-gold)] transition-colors font-medium"
+                            >
                                 Sign In
                             </Link>
                         </motion.p>
                     </motion.div>
-                </motion.div>
+                </div>
             </div>
         </div>
+        </>
     );
 }
