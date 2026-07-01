@@ -157,14 +157,16 @@ export default function LoginClient() {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/70" />
                 </div>
 
-                {/* Top branding — luxurious floating logo over the image */}
+                {/* Top branding — luxurious floating logo inside a frosted pill backdrop */}
                 <motion.div 
-                    className="relative z-10 pt-10 sm:pt-14 px-6 sm:px-8 logo-glow"
-                    initial={{ opacity: 0, y: -30, scale: 0.9 }}
+                    className="relative z-10 pt-8 sm:pt-12 px-6 logo-glow self-start"
+                    initial={{ opacity: 0, y: -30, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" as const }}
                 >
-                    <Logo variant="full" size="small" theme="white" />
+                    <div className="bg-black/35 backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.25)] flex items-center justify-center">
+                        <Logo variant="full" size="small" theme="white" />
+                    </div>
                 </motion.div>
 
                 {/* Spacer — pushes form card to the bottom */}
@@ -172,40 +174,40 @@ export default function LoginClient() {
 
                 {/* Bottom floating liquid glass card */}
                 <motion.div
-                    className="relative z-10 mx-3 sm:mx-6 mb-5 rounded-3xl glass-card-liquid"
+                    className="relative z-10 mx-4 sm:mx-8 mb-6 rounded-[28px] glass-card-liquid flex-shrink-0"
                     style={{ 
-                        background: 'linear-gradient(165deg, rgba(255,253,250,0.88) 0%, rgba(255,250,245,0.95) 50%, rgba(255,253,250,0.90) 100%)',
-                        backdropFilter: 'blur(50px) saturate(1.6)',
-                        WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
-                        boxShadow: '0 -12px 80px rgba(0,0,0,0.18), 0 4px 30px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(0,0,0,0.02)'
+                        background: 'linear-gradient(168deg, rgba(255,254,252,0.90) 0%, rgba(255,251,246,0.95) 50%, rgba(255,254,252,0.90) 100%)',
+                        backdropFilter: 'blur(60px) saturate(1.8)',
+                        WebkitBackdropFilter: 'blur(60px) saturate(1.8)',
+                        boxShadow: '0 -15px 90px rgba(0,0,0,0.2), 0 6px 36px rgba(0,0,0,0.12), inset 0 1.5px 1.5px rgba(255,255,255,0.75), inset 0 -1.5px 1.5px rgba(0,0,0,0.03)'
                     }}
                     variants={cardSlideUp}
                     initial="hidden"
                     animate="visible"
                 >
-                    <div className="relative z-10 px-6 sm:px-9 pt-7 pb-7">
+                    <div className="relative z-10 px-7 sm:px-10 pt-9 pb-9">
                         {/* Decorative gold accent bar */}
-                        <div className="w-10 h-[3px] bg-[var(--color-gold)] rounded-full mb-6 mx-auto" />
+                        <div className="w-12 h-[3.5px] bg-[var(--color-gold)] rounded-full mb-7 mx-auto opacity-80" />
                         
-                        <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl text-[var(--color-ink)] leading-tight text-center mb-1">
+                        <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl text-[var(--color-ink)] leading-tight text-center mb-2 font-medium tracking-wide">
                             Welcome Back
                         </h1>
-                        <p className="font-[family-name:var(--font-cinzel)] text-[9px] tracking-[0.25em] uppercase text-[var(--color-gold)] text-center mb-8">
+                        <p className="font-[family-name:var(--font-cinzel)] text-[9.5px] tracking-[0.28em] uppercase text-[var(--color-gold)] text-center mb-10">
                             Sign in to continue
                         </p>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-8 mt-6">
                             {/* Email */}
                             <div className="relative">
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="peer w-full bg-transparent border-b border-[rgba(26,26,26,0.12)] py-2.5 text-sm focus:outline-none focus:border-[var(--color-gold)] transition-colors rounded-none placeholder-transparent text-[var(--color-ink)]"
+                                    className="peer w-full bg-transparent border-b border-[rgba(26,26,26,0.12)] py-3 text-sm focus:outline-none focus:border-[var(--color-gold)] transition-colors rounded-none placeholder-transparent text-[var(--color-ink)]"
                                     placeholder="Email Address"
                                     required
                                 />
-                                <label className="absolute left-0 -top-3 text-[9px] text-[var(--color-slate)] tracking-[0.12em] uppercase transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-2.5 peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-[var(--color-slate-light)] peer-focus:-top-3 peer-focus:text-[9px] peer-focus:tracking-[0.12em] peer-focus:text-[var(--color-gold)] cursor-text pointer-events-none">
+                                <label className="absolute left-0 -top-3.5 text-[9px] text-[var(--color-slate)] tracking-[0.12em] uppercase transition-all peer-placeholder-shown:text-[13.5px] peer-placeholder-shown:top-3 peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-[var(--color-slate-light)] peer-focus:-top-3.5 peer-focus:text-[9px] peer-focus:tracking-[0.12em] peer-focus:text-[var(--color-gold)] cursor-text pointer-events-none">
                                     Email Address
                                 </label>
                             </div>
@@ -216,17 +218,17 @@ export default function LoginClient() {
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="peer w-full bg-transparent border-b border-[rgba(26,26,26,0.12)] py-2.5 text-sm pr-12 focus:outline-none focus:border-[var(--color-gold)] transition-colors rounded-none placeholder-transparent text-[var(--color-ink)]"
+                                    className="peer w-full bg-transparent border-b border-[rgba(26,26,26,0.12)] py-3 text-sm pr-12 focus:outline-none focus:border-[var(--color-gold)] transition-colors rounded-none placeholder-transparent text-[var(--color-ink)]"
                                     placeholder="Password"
                                     required
                                 />
-                                <label className="absolute left-0 -top-3 text-[9px] text-[var(--color-slate)] tracking-[0.12em] uppercase transition-all peer-placeholder-shown:text-[13px] peer-placeholder-shown:top-2.5 peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-[var(--color-slate-light)] peer-focus:-top-3 peer-focus:text-[9px] peer-focus:tracking-[0.12em] peer-focus:text-[var(--color-gold)] cursor-text pointer-events-none">
+                                <label className="absolute left-0 -top-3.5 text-[9px] text-[var(--color-slate)] tracking-[0.12em] uppercase transition-all peer-placeholder-shown:text-[13.5px] peer-placeholder-shown:top-3 peer-placeholder-shown:tracking-normal peer-placeholder-shown:text-[var(--color-slate-light)] peer-focus:-top-3.5 peer-focus:text-[9px] peer-focus:tracking-[0.12em] peer-focus:text-[var(--color-gold)] cursor-text pointer-events-none">
                                     Password
                                 </label>
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-0 top-2.5 text-[9px] tracking-[0.08em] uppercase text-[var(--color-slate)] hover:text-[var(--color-ink)] transition-colors"
+                                    className="absolute right-0 top-3 text-[9px] tracking-[0.08em] uppercase text-[var(--color-slate)] hover:text-[var(--color-ink)] transition-colors"
                                 >
                                     {showPassword ? "Hide" : "Show"}
                                 </button>
