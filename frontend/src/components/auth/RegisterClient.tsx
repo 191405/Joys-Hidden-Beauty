@@ -100,7 +100,7 @@ export default function RegisterClient() {
             }
         `}</style>
 
-        <div className="min-h-[100dvh] flex relative bg-[var(--color-canvas)] selection:bg-[var(--color-gold)]/30 selection:text-[var(--color-ink)] overflow-hidden">
+        <div className="min-h-[100dvh] flex relative bg-[var(--color-canvas)] selection:bg-[var(--color-gold)]/30 selection:text-[var(--color-ink)] overflow-x-hidden">
             
             {/* LEFT — Editorial Image (Desktop) */}
             <div className="hidden lg:flex lg:w-[56%] relative overflow-hidden flex-shrink-0">
@@ -152,8 +152,8 @@ export default function RegisterClient() {
                 {/* Spacer to push form to bottom on mobile */}
                 <div className="flex-1 lg:hidden" />
 
-                {/* Form Area — scrollable on mobile for long forms */}
-                <div className="relative z-10 w-full flex flex-col items-center lg:justify-center lg:flex-1 px-6 sm:px-8 lg:px-14 pb-8 lg:pb-0 overflow-y-auto">
+                {/* Form Area */}
+                <div className="relative z-10 w-full flex flex-col items-center lg:justify-center lg:flex-1 px-5 sm:px-8 lg:px-14 pb-10 lg:pb-0">
                     
                     <motion.div
                         className="w-full max-w-[400px]"
