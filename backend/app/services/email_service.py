@@ -181,38 +181,86 @@ email_service = EmailService()
 
 
 def send_email(to: str, template_name: str, **kwargs):
-    """Legacy email helper for auth endpoints."""
-    first_name = kwargs.get("first_name", "there")
-    subject = f"Welcome to Joy's Hidden Beauty, {first_name}!"
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #0A0A0A; color: #E5E5E5; margin: 0; padding: 0; }}
-            .container {{ max-width: 600px; margin: 40px auto; background-color: #121212; border: 1px solid #333333; border-top: 4px solid #D4AF37; padding: 40px; text-align: center; }}
-            .logo {{ font-family: 'Times New Roman', Times, serif; font-size: 24px; letter-spacing: 4px; color: #D4AF37; margin-bottom: 30px; text-transform: uppercase; }}
-            h1 {{ font-size: 22px; font-weight: 300; letter-spacing: 2px; margin-bottom: 20px; color: #FFFFFF; }}
-            p {{ font-size: 15px; line-height: 1.6; color: #A1A1AA; margin-bottom: 20px; }}
-            .btn {{ display: inline-block; padding: 14px 35px; background-color: #D4AF37; color: #000000; text-decoration: none; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; margin-bottom: 30px; font-weight: bold; }}
-            .footer {{ font-size: 12px; color: #555555; margin-top: 40px; border-top: 1px solid #222222; padding-top: 20px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="logo">Joy's Hidden Beauty</div>
-            <h1>WELCOME TO THE FAMILY</h1>
-            <p>Dear {first_name},</p>
-            <p>Thank you for creating an account with Joy's Hidden Beauty. We are absolutely thrilled to welcome you to our community.</p>
-            <p>As a member, you now have exclusive access to our premium skincare collections, bespoke beauty services, and personalized recommendations.</p>
-            <a href="{get_settings().FRONTEND_URL}/account" class="btn">Explore Your Account</a>
-            <div class="footer">
-                &copy; 2026 Joy's Hidden Beauty. All rights reserved.<br>
-                Experience Quality, Redefined.
+    """Email helper for various endpoints."""
+    if template_name == "welcome":
+        first_name = kwargs.get("first_name", "there")
+        subject = f"Welcome to Joy's Hidden Beauty, {first_name}!"
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #0A0A0A; color: #E5E5E5; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 40px auto; background-color: #121212; border: 1px solid #333333; border-top: 4px solid #D4AF37; padding: 40px; text-align: center; }}
+                .logo {{ font-family: 'Times New Roman', Times, serif; font-size: 24px; letter-spacing: 4px; color: #D4AF37; margin-bottom: 30px; text-transform: uppercase; }}
+                h1 {{ font-size: 22px; font-weight: 300; letter-spacing: 2px; margin-bottom: 20px; color: #FFFFFF; }}
+                p {{ font-size: 15px; line-height: 1.6; color: #A1A1AA; margin-bottom: 20px; }}
+                .btn {{ display: inline-block; padding: 14px 35px; background-color: #D4AF37; color: #000000; text-decoration: none; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; margin-bottom: 30px; font-weight: bold; }}
+                .footer {{ font-size: 12px; color: #555555; margin-top: 40px; border-top: 1px solid #222222; padding-top: 20px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">Joy's Hidden Beauty</div>
+                <h1>WELCOME TO THE FAMILY</h1>
+                <p>Dear {first_name},</p>
+                <p>Thank you for creating an account with Joy's Hidden Beauty. We are absolutely thrilled to welcome you to our community.</p>
+                <p>As a member, you now have exclusive access to our premium skincare collections, bespoke beauty services, and personalized recommendations.</p>
+                <a href="{get_settings().FRONTEND_URL}/account" class="btn">Explore Your Account</a>
+                <div class="footer">
+                    &copy; 2026 Joy's Hidden Beauty. All rights reserved.<br>
+                    Experience Quality, Redefined.
+                </div>
             </div>
-        </div>
-    </body>
-    </html>
-    """
+        </body>
+        </html>
+        """
+    elif template_name == "appointment_reminder":
+        service_name = kwargs.get("service_name", "your appointment")
+        appointment_time = kwargs.get("appointment_time", "")
+        # Try to parse datetime to format it nicely
+        from datetime import datetime
+        try:
+            dt = datetime.fromisoformat(appointment_time)
+            formatted_time = dt.strftime("%B %d, %Y at %I:%M %p")
+        except:
+            formatted_time = appointment_time
+        
+        subject = f"Appointment Confirmed - Joy's Hidden Beauty"
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #0A0A0A; color: #E5E5E5; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 40px auto; background-color: #121212; border: 1px solid #333333; border-top: 4px solid #D4AF37; padding: 40px; text-align: center; }}
+                .logo {{ font-family: 'Times New Roman', Times, serif; font-size: 24px; letter-spacing: 4px; color: #D4AF37; margin-bottom: 30px; text-transform: uppercase; }}
+                h1 {{ font-size: 22px; font-weight: 300; letter-spacing: 2px; margin-bottom: 20px; color: #FFFFFF; }}
+                p {{ font-size: 15px; line-height: 1.6; color: #A1A1AA; margin-bottom: 20px; }}
+                .footer {{ font-size: 12px; color: #555555; margin-top: 40px; border-top: 1px solid #222222; padding-top: 20px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">Joy's Hidden Beauty</div>
+                <h1>APPOINTMENT CONFIRMED</h1>
+                <p>Hello,</p>
+                <p>Your payment was successful and your appointment for <strong>{service_name}</strong> is now fully confirmed.</p>
+                <p><strong>Scheduled Time:</strong> {formatted_time}</p>
+                <p>We look forward to providing you with a luxurious experience.</p>
+                <div class="footer">
+                    &copy; 2026 Joy's Hidden Beauty. All rights reserved.<br>
+                    Experience Quality, Redefined.
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    else:
+        logger.warning(f"Unknown email template requested: {template_name}")
+        return
+
     email_service._send_email(to_email=to, subject=subject, html_content=html_content)
+

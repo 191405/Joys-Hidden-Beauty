@@ -74,7 +74,7 @@ def get_available_slots(
 
         # Fetch existing appointments for this staff member on this day
         # Include both confirmed and held (not expired) appointments
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         existing = (
             db.query(Appointment)
             .filter(
@@ -170,7 +170,7 @@ def hold_slot(
 
     start_time = datetime.fromisoformat(start_time_str)
     end_time = start_time + timedelta(minutes=service.duration_minutes)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     held_until = now + timedelta(minutes=10)
 
     # Check for conflicts (excluding expired holds)
@@ -266,7 +266,7 @@ def release_expired_holds(db: Session) -> int:
     Release all expired holds. Called by the scheduler every 2 minutes.
     Returns the number of released holds.
     """
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     expired = (
         db.query(Appointment)
         .filter(
