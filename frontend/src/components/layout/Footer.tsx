@@ -31,13 +31,21 @@ const SOCIAL = [
             </svg>
         ),
     },
-
     {
         label: "TikTok",
         href: "https://www.tiktok.com/@joyshiddenbeauty",
         icon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
                 <path d="M9 12a4 4 0 104 4V4a5 5 0 005 5" />
+            </svg>
+        ),
+    },
+    {
+        label: "WhatsApp",
+        href: "https://wa.me/234",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
+                <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
             </svg>
         ),
     },
@@ -89,8 +97,8 @@ export default function Footer() {
                         </div>
                     </div>
 
-                    {/* Link Columns — 2-col on mobile, 3 individual on lg */}
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:contents gap-8 lg:gap-0 lg:col-span-3">
+                    {/* Link Columns */}
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 lg:col-span-3">
                         {Object.entries(FOOTER_LINKS).map(([title, links]) => (
                             <div key={title}>
                                 <h4 className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.25em] uppercase mb-6 text-[var(--color-gold)]">

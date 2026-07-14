@@ -1,20 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch, setToken } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/brand/Logo";
 
+/** Floating golden particles on the image panel */
+function GoldenParticles() {
+    const particles = Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        left: `${8 + Math.random() * 84}%`,
+        top: `${5 + Math.random() * 90}%`,
+        size: 2 + Math.random() * 3,
+        delay: Math.random() * 4,
+        duration: 3 + Math.random() * 3,
+    }));
+
+    return (
+        <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
+            {particles.map((p) => (
+                <span
+                    key={p.id}
+                    className="sparkle"
+                    style={{
+                        left: p.left,
+                        top: p.top,
+                        width: p.size,
+                        height: p.size,
+                        animationDelay: `${p.delay}s`,
+                        animationDuration: `${p.duration}s`,
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
+
+/** Morphing background blob for form depth */
+function MorphBlob() {
+    return (
+        <div
+            className="absolute -right-32 -top-32 w-[500px] h-[500px] opacity-[0.035] pointer-events-none hidden lg:block"
+            style={{
+                background: "radial-gradient(circle, var(--color-gold) 0%, transparent 70%)",
+                animation: "morph-blob 12s ease-in-out infinite",
+            }}
+        />
+    );
+}
+
+/** Typewriter hook for the subheading */
+function useTypewriter(text: string, speed = 50) {
+    const [displayed, setDisplayed] = useState("");
+    const [done, setDone] = useState(false);
+    const idx = useRef(0);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const interval = setInterval(() => {
+                idx.current++;
+                setDisplayed(text.slice(0, idx.current));
+                if (idx.current >= text.length) {
+                    clearInterval(interval);
+                    setDone(true);
+                }
+            }, speed);
+            return () => clearInterval(interval);
+        }, 600); // delay before typing starts
+        return () => clearTimeout(timer);
+    }, [text, speed]);
+
+    return { displayed, done };
+}
+
 export default function LoginClient() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const router = useRouter();
+
+    const { displayed: typewriterText, done: typewriterDone } = useTypewriter("Your beauty journey awaits");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,24 +117,6 @@ export default function LoginClient() {
     };
 
     return (
-        <>
-        {/* Scoped keyframes */}
-        <style jsx global>{`
-            @keyframes auth-gradient-drift {
-                0%, 100% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-            }
-            @keyframes auth-pulse-ring {
-                0% { transform: scale(0.95); opacity: 0.5; }
-                50% { transform: scale(1.05); opacity: 0.2; }
-                100% { transform: scale(0.95); opacity: 0.5; }
-            }
-            @keyframes auth-shine {
-                0% { left: -80%; }
-                100% { left: 130%; }
-            }
-        `}</style>
-
         <div className="min-h-[100dvh] flex relative bg-[var(--color-canvas)] selection:bg-[var(--color-gold)]/30 selection:text-[var(--color-ink)] overflow-x-hidden">
             
             {/* ═══════════════════════════════════════ */}
@@ -78,6 +131,9 @@ export default function LoginClient() {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-[var(--color-canvas)]/40" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                 
+                {/* Golden floating particles */}
+                <GoldenParticles />
+
                 {/* Desktop brand watermark — bottom-left */}
                 <motion.div 
                     className="absolute bottom-10 left-10 z-10"
@@ -87,6 +143,12 @@ export default function LoginClient() {
                 >
                     <Logo variant="full" size="default" theme="white" />
                 </motion.div>
+
+                {/* Decorative corner accent */}
+                <div className="absolute top-8 right-8 z-10">
+                    <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-[var(--color-gold)] opacity-40" />
+                    <div className="w-[1px] h-16 bg-gradient-to-b from-[var(--color-gold)] to-transparent opacity-40 ml-auto" />
+                </div>
             </div>
 
             {/* ═══════════════════════════════════════ */}
@@ -94,6 +156,9 @@ export default function LoginClient() {
             {/* ═══════════════════════════════════════ */}
             <div className="w-full lg:w-[44%] flex flex-col min-h-[100dvh] relative z-10">
                 
+                {/* Morphing blob background */}
+                <MorphBlob />
+
                 {/* Mobile Background — Full bleed portrait */}
                 <div className="absolute inset-0 lg:hidden z-0">
                     <div 
@@ -145,7 +210,12 @@ export default function LoginClient() {
                             <h1 className="font-[family-name:var(--font-playfair)] text-[32px] sm:text-4xl lg:text-[42px] text-white lg:text-[var(--color-ink)] leading-[1.1] font-normal">
                                 Sign In
                             </h1>
-                            <div className="w-10 h-[2px] bg-gradient-to-r from-[var(--color-gold)] to-transparent mt-5 rounded-full" />
+                            <div className="w-10 h-[2px] bg-gradient-to-r from-[var(--color-gold)] to-transparent mt-5 rounded-full mb-4" />
+                            {/* Typewriter sub-heading */}
+                            <p className="text-sm text-white/40 lg:text-[var(--color-slate)] h-5">
+                                {typewriterText}
+                                {!typewriterDone && <span className="animate-pulse text-[var(--color-gold)]">|</span>}
+                            </p>
                         </motion.div>
 
                         {/* ─── Form ─── */}
@@ -204,8 +274,32 @@ export default function LoginClient() {
                                 </div>
                             </motion.div>
 
-                            {/* Forgot Password — Clean single link */}
-                            <motion.div variants={fadeUp} className="flex justify-end mb-7">
+                            {/* Remember Me & Forgot Password row */}
+                            <motion.div variants={fadeUp} className="flex items-center justify-between mb-7">
+                                {/* Remember Me Toggle */}
+                                <label className="flex items-center gap-2.5 cursor-pointer group">
+                                    <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={rememberMe}
+                                        onClick={() => setRememberMe(!rememberMe)}
+                                        className={`relative w-9 h-5 rounded-full transition-all duration-300 ${
+                                            rememberMe 
+                                                ? "bg-[var(--color-gold)]" 
+                                                : "bg-white/15 lg:bg-[var(--color-ink)]/10"
+                                        }`}
+                                    >
+                                        <div
+                                            className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${
+                                                rememberMe ? "translate-x-4" : ""
+                                            }`}
+                                        />
+                                    </button>
+                                    <span className="text-[11px] text-white/40 lg:text-[var(--color-slate)] group-hover:text-[var(--color-gold)] transition-colors">
+                                        Remember me
+                                    </span>
+                                </label>
+
                                 <button 
                                     type="button" 
                                     className="text-[11px] tracking-wide text-white/40 lg:text-[var(--color-slate)] hover:text-[var(--color-gold)] transition-colors"
@@ -304,6 +398,5 @@ export default function LoginClient() {
                 </div>
             </div>
         </div>
-        </>
     );
 }

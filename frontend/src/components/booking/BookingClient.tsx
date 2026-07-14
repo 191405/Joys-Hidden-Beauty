@@ -25,6 +25,53 @@ const FADE_IN_UP = {
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } }
 };
 
+/* ═══════════════════════════
+   TOAST COMPONENT
+═══════════════════════════ */
+function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 4000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    return (
+        <motion.div
+            initial={{ y: 20, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 10, opacity: 0, scale: 0.96 }}
+            className={`toast ${type === "success" ? "toast-success" : "toast-error"}`}
+        >
+            {message}
+        </motion.div>
+    );
+}
+
+/* ═══════════════════════════
+   SKELETON LOADER COMPONENT
+═══════════════════════════ */
+function ServiceSkeletons() {
+    return (
+        <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+                <div key={i} className="w-full p-6 border border-[rgba(26,26,26,0.06)] bg-white rounded-sm space-y-4">
+                    <div className="flex justify-between items-start">
+                        <div className="space-y-2.5 w-2/3">
+                            {/* Category & Duration */}
+                            <div className="h-3 bg-[var(--color-mist)] rounded w-1/3 animate-pulse" />
+                            {/* Title */}
+                            <div className="h-5 bg-[var(--color-mist)] rounded w-2/3 animate-pulse" />
+                            {/* Description */}
+                            <div className="h-3 bg-[var(--color-mist)] rounded w-full animate-pulse" />
+                        </div>
+                        {/* Price */}
+                        <div className="h-6 bg-[var(--color-mist)] rounded w-16 animate-pulse" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function BookingClient() {
     const [step, setStep] = useState(1);
     const [services, setServices] = useState<Service[]>([]);
@@ -39,6 +86,7 @@ export default function BookingClient() {
     const [bookingCart, setBookingCart] = useState<CartItem[]>([]);
 
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     // Fetch Services on Mount
     useEffect(() => {
@@ -48,6 +96,7 @@ export default function BookingClient() {
                 setServices(data);
             } catch (error) {
                 console.error("Failed to load services", error);
+                setToast({ message: "Failed to load services. Please refresh.", type: "error" });
             }
         };
         fetchServices();
@@ -63,6 +112,7 @@ export default function BookingClient() {
                     setAvailableSlots(slots);
                 } catch (error) {
                     console.error("Failed to load availability", error);
+                    setToast({ message: "Failed to load available times.", type: "error" });
                 } finally {
                     setLoading(false);
                 }
@@ -94,6 +144,7 @@ export default function BookingClient() {
             };
 
             setBookingCart(prev => [...prev, newItem]);
+            setToast({ message: `${selectedService.name} added to your booking.`, type: "success" });
             
             // Reset active selections for next addition
             setSelectedService(null);
@@ -104,7 +155,7 @@ export default function BookingClient() {
             setStep(1);
         } catch (error) {
             console.error("Failed to hold slot", error);
-            alert("This slot is no longer available.");
+            setToast({ message: "This slot is no longer available.", type: "error" });
         } finally {
             setLoading(false);
         }
@@ -121,14 +172,14 @@ export default function BookingClient() {
                 appointmentIds.push(res.appointment_id);
             } catch (error) {
                 console.error("Failed to hold active selection", error);
-                alert("The selected slot is no longer available.");
+                setToast({ message: "The selected slot is no longer available.", type: "error" });
                 setLoading(false);
                 return;
             }
         }
 
         if (appointmentIds.length === 0) {
-            alert("Please select at least one service before proceeding.");
+            setToast({ message: "Please select at least one service before proceeding.", type: "error" });
             return;
         }
 
@@ -139,7 +190,7 @@ export default function BookingClient() {
             window.location.href = res.cashier_url;
         } catch (error) {
             console.error("Payment initiation failed", error);
-            alert("Could not initiate payment. Please try again.");
+            setToast({ message: "Could not initiate payment. Please try again.", type: "error" });
             setLoading(false);
         }
     };
@@ -154,7 +205,7 @@ export default function BookingClient() {
     const roundToTwo = (val: number) => Math.round((val + Number.EPSILON) * 100) / 100;
 
     return (
-        <div className="pt-32 pb-20 min-h-screen relative">
+        <div className="pt-32 pb-20 min-h-screen relative bg-[var(--color-canvas)]">
             <div className="max-w-[850px] mx-auto px-6">
                 
                 {/* Header */}
@@ -167,12 +218,12 @@ export default function BookingClient() {
                     </div>
                 </RevealOnScroll>
 
-                {/* Progress Steps Indicator */}
-                <div className="flex items-center justify-center gap-4 mb-12 select-none">
+                {/* Progress Steps Indicator - Responsive Mobile Layout */}
+                <div className="flex items-center justify-center gap-2 sm:gap-4 mb-12 select-none">
                     {[1, 2, 3].map((s) => (
-                        <div key={s} className="flex items-center gap-4">
+                        <div key={s} className="flex items-center gap-2 sm:gap-4">
                             <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${step >= s
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 ${step >= s
                                     ? "bg-[var(--color-gold)] text-[var(--color-canvas)]"
                                     : "border border-[rgba(26,26,26,0.15)] text-[var(--color-slate)]"
                                     }`}
@@ -180,7 +231,7 @@ export default function BookingClient() {
                                 {s}
                             </div>
                             {s < 3 && (
-                                <div className={`w-16 h-[1px] ${step > s ? "bg-[var(--color-gold)]" : "bg-[rgba(26,26,26,0.1)]"}`} />
+                                <div className={`w-8 sm:w-16 h-[1px] ${step > s ? "bg-[var(--color-gold)]" : "bg-[rgba(26,26,26,0.1)]"}`} />
                             )}
                         </div>
                     ))}
@@ -203,7 +254,7 @@ export default function BookingClient() {
                         </div>
                         <button
                             onClick={() => setStep(3)}
-                            className="btn-gold !py-2.5 !px-6 text-[9px] tracking-widest whitespace-nowrap"
+                            className="btn-gold py-2.5 px-6 text-[9px] tracking-widest whitespace-nowrap"
                         >
                             Proceed to Checkout (₦{getCartTotal().toLocaleString()})
                         </button>
@@ -258,11 +309,7 @@ export default function BookingClient() {
                                         </motion.button>
                                     );
                                 })}
-                                {services.length === 0 && (
-                                    <div className="text-center text-[var(--color-slate)] py-8">
-                                        Loading services...
-                                    </div>
-                                )}
+                                {services.length === 0 && <ServiceSkeletons />}
                             </div>
                         </motion.div>
                     )}
@@ -285,26 +332,28 @@ export default function BookingClient() {
                                 </h2>
                             </div>
 
-                            {/* Date Picker */}
-                            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-10">
-                                {dates.map((d) => {
-                                    const isSelected = selectedDate?.toDateString() === d.toDateString();
-                                    return (
-                                        <button
-                                            key={d.toISOString()}
-                                            onClick={() => { setSelectedDate(d); setSelectedSlot(null); }}
-                                            className={`py-3 text-center transition-all duration-300 rounded-sm flex flex-col justify-center items-center ${isSelected
-                                                ? "bg-[var(--color-gold)] text-[var(--color-canvas)]"
-                                                : "border border-[rgba(26,26,26,0.08)] bg-white hover:border-[var(--color-gold)] text-[var(--color-ink)]"
-                                                }`}
-                                        >
-                                            <p className="text-[9px] uppercase tracking-wider font-semibold opacity-85">
-                                                {d.toLocaleDateString("en", { weekday: "short" })}
-                                            </p>
-                                            <p className="text-base font-semibold mt-0.5">{d.getDate()}</p>
-                                        </button>
-                                    );
-                                })}
+                            {/* Date Picker - Responsive Scroll Wrapper */}
+                            <div className="overflow-x-auto pb-3 mb-10 no-scrollbar">
+                                <div className="flex gap-2 min-w-max md:grid md:grid-cols-7 md:min-w-0">
+                                    {dates.map((d) => {
+                                        const isSelected = selectedDate?.toDateString() === d.toDateString();
+                                        return (
+                                            <button
+                                                key={d.toISOString()}
+                                                onClick={() => { setSelectedDate(d); setSelectedSlot(null); }}
+                                                className={`py-3 px-4 md:px-0 text-center transition-all duration-300 rounded-sm flex flex-col justify-center items-center flex-1 min-w-[64px] ${isSelected
+                                                    ? "bg-[var(--color-gold)] text-[var(--color-canvas)]"
+                                                    : "border border-[rgba(26,26,26,0.08)] bg-white hover:border-[var(--color-gold)] text-[var(--color-ink)]"
+                                                    }`}
+                                            >
+                                                <p className="text-[9px] uppercase tracking-wider font-semibold opacity-85">
+                                                    {d.toLocaleDateString("en", { weekday: "short" })}
+                                                </p>
+                                                <p className="text-base font-semibold mt-0.5">{d.getDate()}</p>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
 
                             {/* Time Slots */}
@@ -317,7 +366,10 @@ export default function BookingClient() {
                                         Select Appointment Slot
                                     </h3>
                                     {loading ? (
-                                        <div className="text-center text-sm text-[var(--color-slate)] py-8">Checking availability...</div>
+                                        <div className="text-center text-sm text-[var(--color-slate)] py-8">
+                                            <div className="inline-block w-6 h-6 border-2 border-t-transparent border-[var(--color-gold)] rounded-full animate-spin mb-2" />
+                                            <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-widest uppercase">Checking availability...</p>
+                                        </div>
                                     ) : availableSlots.length > 0 ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-10">
                                             {availableSlots.map((slot, idx) => {
@@ -488,7 +540,7 @@ export default function BookingClient() {
                             <button
                                 onClick={handleConfirm}
                                 disabled={loading || (bookingCart.length === 0 && !selectedService)}
-                                className="btn-gold w-full justify-center mb-4 disabled:opacity-50 !py-4"
+                                className="btn-gold w-full justify-center mb-4 disabled:opacity-50 py-4"
                             >
                                 {loading ? "Redirecting to OPay..." : `Secure Slots & Pay Deposit (₦${getDepositTotal().toLocaleString()})`}
                             </button>
@@ -504,6 +556,17 @@ export default function BookingClient() {
 
                 </AnimatePresence>
             </div>
+
+            {/* Toast Container */}
+            <AnimatePresence>
+                {toast && (
+                    <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => setToast(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

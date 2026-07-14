@@ -54,6 +54,27 @@ const TABS = [
     { id: "recs" as const, label: "Matches" },
 ];
 
+/* ═══════════════════════════
+   TOAST COMPONENT
+═══════════════════════════ */
+function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 4000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    return (
+        <motion.div
+            initial={{ y: 20, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 10, opacity: 0, scale: 0.96 }}
+            className={`toast ${type === "success" ? "toast-success" : "toast-error"}`}
+        >
+            {message}
+        </motion.div>
+    );
+}
+
 export default function AccountClient() {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -70,6 +91,8 @@ export default function AccountClient() {
     const [editTone, setEditTone] = useState("");
     const [editAllergies, setEditAllergies] = useState<string[]>([]);
     const [editConcerns, setEditConcerns] = useState<string[]>([]);
+
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     const router = useRouter();
 
@@ -135,10 +158,10 @@ export default function AccountClient() {
             const recsData = await apiFetch<RecommendedProduct[]>("/user/recommendations");
             setRecommendations(recsData);
             
-            alert("Profile updated successfully.");
+            setToast({ message: "Profile updated successfully.", type: "success" });
         } catch (err) {
             console.error("Update failed:", err);
-            alert("Failed to update profile.");
+            setToast({ message: "Failed to update profile.", type: "error" });
         } finally {
             setUpdating(false);
         }
@@ -183,7 +206,7 @@ export default function AccountClient() {
                 {/* Header */}
                 <RevealOnScroll>
                     <div className="text-center mb-16 flex flex-col items-center justify-center">
-                        <Logo variant="emblem" size="default" theme="gold" className="mb-4 animate-pulse" />
+                        <Logo variant="emblem" size="default" theme="gold" className="mb-4" />
                         <p className="font-[family-name:var(--font-cinzel)] text-[10px] tracking-[0.3em] uppercase text-[var(--color-gold)] mb-4">
                             Client Portal
                         </p>
@@ -298,8 +321,6 @@ export default function AccountClient() {
                             {appointments.length > 0 ? (
                                 <div className="space-y-4">
                                     {appointments.map((apt) => {
-                                        // Dynamic deposit display (standard 30% upfront on total slot)
-                                        // In standard JHB services, total price is derived from catalog service
                                         return (
                                             <div key={apt.id} className="border border-[rgba(26,26,26,0.08)] bg-white p-6 rounded-sm">
                                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -493,7 +514,7 @@ export default function AccountClient() {
                             {recommendations.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                                     {recommendations.map((prod) => (
-                                        <div key={prod.id} className="border border-[rgba(26,26,26,0.08)] bg-white hover:border-[var(--color-gold)] transition-all duration-500 flex flex-col justify-between">
+                                        <div key={prod.id} className="border border-[rgba(26,26,26,0.08)] bg-white hover:border-[var(--color-gold)] transition-all duration-500 flex flex-col justify-between h-full min-h-[380px]">
                                             
                                             {/* Product Image */}
                                             <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-mist)] flex-shrink-0">
@@ -550,6 +571,17 @@ export default function AccountClient() {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Toast Container */}
+            <AnimatePresence>
+                {toast && (
+                    <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => setToast(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

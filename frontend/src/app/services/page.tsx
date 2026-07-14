@@ -45,7 +45,7 @@ export default function ServicesPage() {
 
     const filtered = activeCategory === "All"
         ? services
-        : services.filter((s) => s.category === activeCategory);
+        : services.filter((s) => s.category.toLowerCase() === activeCategory.toLowerCase());
 
     return (
         <div className="pt-0 pb-0">
@@ -73,7 +73,7 @@ export default function ServicesPage() {
             </div>
 
             {/* ══ Category Filters ══ */}
-            <div className="bg-[var(--color-canvas)] border-b border-[rgba(26,26,26,0.06)] sticky top-[60px] md:top-16 z-30">
+            <div className="bg-[var(--color-canvas)] border-b border-[rgba(26,26,26,0.06)] sticky top-[60px] md:top-16 z-[30]">
                 <div className="container-luxury">
                     <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
                         {CATEGORIES.map((cat) => (

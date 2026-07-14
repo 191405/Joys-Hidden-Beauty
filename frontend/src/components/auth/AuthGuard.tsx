@@ -3,17 +3,25 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
+/** Routes that require authentication — everything else is public */
+const PROTECTED_PREFIXES = ["/account", "/admin"];
+
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("joyshidden_token");
-        const publicPaths = ["/auth/login", "/auth/register"];
+        const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
 
-        // If no token exists and they are not on a public path, cleanly redirect.
-        if (!token && !publicPaths.includes(pathname)) {
+        if (!isProtected) {
+            // Public page — no auth needed
+            setIsAuthorized(true);
+            return;
+        }
+
+        const token = localStorage.getItem("joyshidden_token");
+        if (!token) {
             router.replace("/auth/login");
         } else {
             setIsAuthorized(true);
@@ -21,10 +29,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [pathname, router]);
 
     if (!isAuthorized) {
-        // Render a sleek, brand-aligned splash screen while verifying to prevent content UI "flash"
         return (
             <div className="fixed inset-0 bg-[#0A0A0A] flex flex-col items-center justify-center z-[9999]">
-                <div className="font-cinzel text-[#D4AF37] text-lg tracking-[0.3em] uppercase animate-pulse">
+                <div className="font-[family-name:var(--font-cinzel)] text-[#D4AF37] text-lg tracking-[0.3em] uppercase animate-pulse">
                     Joy&apos;s Hidden Beauty
                 </div>
             </div>

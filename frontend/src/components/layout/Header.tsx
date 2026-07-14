@@ -19,18 +19,26 @@ export default function Header() {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const pathname = usePathname();
 
-    const [isAdmin] = useState(() => {
+    // Recheck auth state whenever pathname changes (login/logout)
+    useEffect(() => {
         try {
             const token = getToken();
+            setIsLoggedIn(!!token);
             if (token) {
                 const payload = JSON.parse(atob(token.split(".")[1]));
-                return payload.role === "admin";
+                setIsAdmin(payload.role === "admin");
+            } else {
+                setIsAdmin(false);
             }
-        } catch { /* ignore */ }
-        return false;
-    });
+        } catch {
+            setIsAdmin(false);
+            setIsLoggedIn(false);
+        }
+    }, [pathname]);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -139,9 +147,9 @@ export default function Header() {
                         )}
 
 
-                        {/* Account icon */}
+                        {/* Account icon — links to /account when logged in, /auth/login when not */}
                         <Link
-                            href="/auth/login"
+                            href={isLoggedIn ? "/account" : "/auth/login"}
                             aria-label="Account"
                             className="text-[#FFFCF9] hover:text-[var(--color-gold)] transition-colors duration-300"
                         >
@@ -194,13 +202,29 @@ export default function Header() {
                             </Link>
                         </motion.div>
                     ))}
+                    {/* Admin link in mobile drawer */}
+                    {isAdmin && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={menuOpen ? { opacity: 1, x: 0 } : {}}
+                            transition={{ delay: NAV_LINKS.length * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            <Link
+                                href="/admin"
+                                onClick={() => setMenuOpen(false)}
+                                className="flex items-center gap-2 py-5 border-b border-[rgba(26,26,26,0.06)] font-[family-name:var(--font-cinzel)] text-sm tracking-[0.25em] uppercase text-[var(--color-gold)] hover:text-[var(--color-ink)] transition-colors"
+                            >
+                                ◈ Admin
+                            </Link>
+                        </motion.div>
+                    )}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={menuOpen ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: NAV_LINKS.length * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ delay: (NAV_LINKS.length + 1) * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <Link
-                            href="/auth/login"
+                            href={isLoggedIn ? "/account" : "/auth/login"}
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center gap-2 py-5 font-[family-name:var(--font-cinzel)] text-sm tracking-[0.25em] uppercase text-[var(--color-ink)] hover:text-[var(--color-gold)] transition-colors"
                         >
@@ -208,7 +232,7 @@ export default function Header() {
                                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                             </svg>
-                            Account
+                            {isLoggedIn ? "Account" : "Sign In"}
                         </Link>
                     </motion.div>
                 </nav>

@@ -54,12 +54,47 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BeautySalon",
+    "name": "JOYSHIDDENBEAUTY",
+    "image": "https://joyshiddenbeauty.com/emblem-gold.png",
+    "@id": "https://joyshiddenbeauty.com/#beauty-salon",
+    "url": "https://joyshiddenbeauty.com",
+    "telephone": "+234",
+    "priceRange": "₦₦",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Ibadan",
+      "addressLocality": "Ibadan",
+      "addressRegion": "Oyo State",
+      "addressCountry": "NG"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:00",
+      "closes": "18:00"
+    }
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${playfair.variable} ${lato.variable} ${cinzel.variable} ${pinyon.variable} antialiased`}
         suppressHydrationWarning
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <GoogleAuthProviderWrapper>
           <AuthGuard>
             <LenisProvider>
