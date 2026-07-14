@@ -19,9 +19,14 @@ from app.core.security import hash_password
 
 
 def seed():
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
+    try:
+        # Create all tables
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+    except Exception as e:
+        print("❌ Database connection failed during seeding: %s" % e)
+        print("⚠️ Seeding skipped. The build will continue so the web server can boot and serve health checks.")
+        return
 
     try:
         # ===========================

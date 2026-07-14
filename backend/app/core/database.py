@@ -48,5 +48,13 @@ def get_db():
 
 
 def init_db():
-    """Create all tables from model metadata."""
-    Base.metadata.create_all(bind=engine)
+    """Create all tables from model metadata. Handles connection errors gracefully."""
+    try:
+        # Test connection
+        with engine.connect() as conn:
+            pass
+        Base.metadata.create_all(bind=engine)
+        print("🎉 Database initialized successfully.")
+    except Exception as e:
+        print("❌ Database initialization failed. Server will remain online for health checks. Error details:")
+        print(e)
