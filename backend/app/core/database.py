@@ -54,7 +54,7 @@ def init_db():
         with engine.connect() as conn:
             pass
         Base.metadata.create_all(bind=engine)
-        print("🎉 Database initialized successfully.")
+        print("Database initialized successfully.")
     except Exception as e:
-        print("❌ Database initialization failed. Server will remain online for health checks. Error details:")
+        print("Database initialization failed. Server will remain online for health checks. Error details:")
         print(e)
